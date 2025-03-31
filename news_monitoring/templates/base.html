@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        News Monitoring
+      {% endblock title %}
+    </title>
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <!-- Main CSS -->
+    {% block extra_css %}{% endblock %}
+    <!-- Block for additional CSS -->
+  </head>
+  <body>
+    <nav>
+      <div>
+        <a href="{% url 'home' %}" style="color: white; font-weight: bold;">News Monitoring</a>
+      </div>
+      <ul class="nav-links">
+        {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'source:add' %}">Add Source</a>
+          </li>
+          <li>
+            <a href="{% url 'source:list_sources' %}">View Sources</a>
+          </li>
+          <!-- View Sources -->
+          <li>
+            <a href="{% url 'story:add' %}">Add Story</a>
+          </li>
+          <li>
+            <a href="{% url 'story:list_stories' %}">View Stories</a>
+          </li>
+          <!-- View Stories -->
+          <li>
+            <a href="{% url 'users:logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <li>
+            <a href="{% url 'users:login' %}">Login</a>
+          </li>
+          <li>
+            <a href="{% url 'users:signup' %}">Signup</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

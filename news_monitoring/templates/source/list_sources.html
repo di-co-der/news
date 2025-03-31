@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}View Sources{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/list_sources.css' %}" />
+{% endblock %}
+{% block content %}
+  <h2>Sources List</h2>
+  {% if sources %}
+    <table class="source-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>URL</th>
+          <th>Tagged Companies</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for source in sources %}
+          <tr>
+            <td>{{ source.name }}</td>
+            <td>
+              <a href="{{ source.url }}" target="_blank">{{ source.url }}</a>
+            </td>
+            <td>
+              {% for company in source.companies.all %}
+                {{ company.company_name }}
+                {% if not forloop.last %},{% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              <a href="{% url 'source:edit' source.id %}" class="edit-btn">Edit</a>
+              <form action="{% url 'source:delete' source.id %}"
+                    method="post"
+                    class="delete-form">
+                {% csrf_token %}
+                <button type="submit"
+                        class="delete-btn"
+                        onclick="return confirm('Are you sure you want to delete this source?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No sources available.</p>
+  {% endif %}
+{% endblock %}

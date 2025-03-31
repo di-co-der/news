@@ -1,0 +1,59 @@
+/* Table Styling */
+.source-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.source-table th, .source-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.source-table th {
+    background: #333;
+    color: white;
+}
+
+.source-table tr:hover {
+    background: #f1f1f1;
+}
+
+/* Edit & Delete Buttons */
+.edit-btn, .delete-btn {
+    padding: 8px 12px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-btn {
+    background: #007bff;
+    color: white;
+}
+
+.delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #0056b3;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+}
+
+/* Form Styling */
+.delete-form {
+    display: inline-block;
+    margin-left: 5px;
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Stories List</h2>
+  {% if stories %}
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Source</th>
+          <th>Added By</th>
+          <th>Article URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for story in stories %}
+          <tr>
+            <td>{{ story.title }}</td>
+            <td>{{ story.source.name }}</td>
+            <td>{{ story.added_by }}</td>
+            <td>
+              <a href="{{ story.article_url }}" target="_blank">Read</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No stories available.</p>
+  {% endif %}
+{% endblock %}

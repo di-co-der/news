@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Sign Up</h2>
+  {% if error %}<p style="color: red;">{{ error }}</p>{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <label for="first_name">First Name:</label>
+    <input type="text" name="first_name" required />
+    <label for="last_name">Last Name:</label>
+    <input type="text" name="last_name" />
+    <label for="email">Email:</label>
+    <input type="email" name="email" required />
+    <label for="password">Password:</label>
+    <input type="password" name="password" required />
+    <label for="confirm_password">Confirm Password:</label>
+    <input type="password" name="confirm_password" required />
+    <label for="company">Company:</label>
+    <select name="company">
+      <option value="">Select a Company</option>
+      {% for company in companies %}<option value="{{ company.id }}">{{ company.name }}</option>{% endfor %}
+    </select>
+    <p>
+      Don't see your company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+    </p>
+    <button type="submit">Register</button>
+  </form>
+{% endblock %}
