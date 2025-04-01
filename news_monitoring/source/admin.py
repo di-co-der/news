@@ -1,6 +1,6 @@
-from django.contrib import admin
 
-from .models import Source
+from django.contrib import admin
+from news_monitoring.source.models import Source
 
 
 @admin.register(Source)

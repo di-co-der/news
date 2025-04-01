@@ -39,6 +39,9 @@
           <li>
             <a href="{% url 'users:logout' %}">Logout</a>
           </li>
+          <li>
+              <span>Hello, {{ user.first_name }}!</span>
+          </li>
         {% else %}
           <li>
             <a href="{% url 'users:login' %}">Login</a>
@@ -52,5 +55,8 @@
     <div>
       {% block content %}{% endblock %}
     </div>
+
+    <!-- Block for additional JS -->
+    {% block extra_js %}{% endblock %}
   </body>
 </html>

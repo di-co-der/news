@@ -9,10 +9,19 @@
 {% block content %}
   <h2 class="page-title">Stories List</h2>
 
+  <!-- Search and Filter Section -->
+  <div class="filter-container">
+    <label for="search-title" class="filter-label">Search by Title:</label>
+    <input type="text" id="search-title" class="filter-input" placeholder="Enter story title...">
+
+    <label for="filter-date" class="filter-label">Filter by Date:</label>
+    <input type="date" id="filter-date" class="filter-input">
+  </div>
+
   {% if stories %}
-    <div class="stories-container">
+    <div class="stories-container" id="stories-list">
       {% for story in stories %}
-        <div class="story-card">
+        <div class="story-card" data-title="{{ story.title|lower }}" data-date="{{ story.published_date|date:'Y-m-d' }}">
           <h3 class="story-title">
             <a href="{{ story.article_url }}" target="_blank">{{ story.title }}</a>
           </h3>
@@ -21,7 +30,7 @@
           <p class="story-companies">
             <strong>Tagged Companies:</strong>
             {% for company in story.tagged_companies.all %}
-              {{ company.company_name }}{% if not forloop.last %}, {% endif %}
+              {{ company.name }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
           </p>
 
@@ -36,4 +45,57 @@
   {% else %}
     <p class="no-stories">No stories available.</p>
   {% endif %}
+
+  <!-- Pagination Controls -->
+  {% if stories.has_other_pages %}
+    <div class="pagination">
+      <span class="step-links">
+        {% if stories.has_previous %}
+          <a href="?page=1">&laquo; First</a>
+          <a href="?page={{ stories.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+          Page {{ stories.number }} of {{ stories.paginator.num_pages }}.
+        </span>
+
+        {% if stories.has_next %}
+          <a href="?page={{ stories.next_page_number }}">Next</a>
+          <a href="?page={{ stories.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.getElementById("search-title");
+      const filterDate = document.getElementById("filter-date");
+      const storiesList = document.getElementById("stories-list");
+
+      function filterStories() {
+        const searchValue = searchInput.value.toLowerCase();
+        const selectedDate = filterDate.value;
+
+        document.querySelectorAll(".story-card").forEach(story => {
+          const title = story.getAttribute("data-title");
+          const date = story.getAttribute("data-date");
+
+          const matchesTitle = title.includes(searchValue);
+          const matchesDate = selectedDate === "" || date === selectedDate;
+
+          if (matchesTitle && matchesDate) {
+            story.style.display = "block";
+          } else {
+            story.style.display = "none";
+          }
+        });
+      }
+
+      searchInput.addEventListener("input", filterStories);
+      filterDate.addEventListener("change", filterStories);
+    });
+  </script>
 {% endblock %}

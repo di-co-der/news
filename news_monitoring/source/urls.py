@@ -9,6 +9,6 @@ app_name = "source"
 urlpatterns = [
     path("add/", add_or_edit_source, name="add"),
     path("edit/<int:source_id>/", add_or_edit_source, name="edit"),
+    path("delete/<int:source_id>", delete_source, name="delete"),
     path("list/", list_sources, name="list"),
-    path("/delete/<int:source_id>", delete_source, name="delete"),
 ]

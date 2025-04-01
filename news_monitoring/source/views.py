@@ -5,82 +5,50 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from news_monitoring.company.models import Company
 from news_monitoring.source.models import Source
+from news_monitoring.source.services import fetch_source_obj, validate_form_data, fetch_source_qs
 
 
 @login_required
 def add_or_edit_source(request, source_id=None):
-    source = None
-    selected_companies = []
+    user = request.user
+    companies = Company.objects.all()
+
+    source_obj = None
+    tagged_companies = []
 
     if source_id:
-        # Fetch the source object (staff users can edit any source)
-        if request.user.is_staff:
-            source = get_object_or_404(Source, id=source_id)
-        else:
-            source = get_object_or_404(Source, id=source_id, added_by=request.user)
-
-        # Get selected companies for pre-filling
-        selected_companies = source.tagged_companies.values_list("id", flat=True)
-
-    companies = Company.objects.all()  # Fetch all companies
+        source_obj, tagged_companies = fetch_source_obj(user, source_id)
 
     if request.method == "POST":
-        name = request.POST.get("name")
-        url = request.POST.get("url")
-        company = request.user.company
-        selected_companies = list(
-            map(int, request.POST.getlist("companies")),
-        )  # Ensure IDs are integers
+        is_validated = validate_form_data(user, request.POST, source_obj)
 
-        if not name or not url:
-            return render(
+        if not is_validated:
+            render(
                 request,
                 "source/add_source.html",
                 {
-                    "error": "All fields are required!",
-                    "source": source,
+                    "error": "Name and URL are required!",
+                    "source": source_obj,
                     "companies": companies,
-                    "selected_companies": selected_companies,  # Pass selected companies
-                },
+                    "tagged_companies": tagged_companies.values_list("id", flat=True) if tagged_companies else []
+                }
             )
-
-        if source:
-            # Updating existing source
-            source.name = name
-            source.url = url
-            source.company = company
-            source.save()
-        else:
-            # Creating new source
-            source = Source.objects.create(name=name, url=url, company=company, added_by=request.user)
-
-        # Assign selected companies
-        source.tagged_companies.set(selected_companies)
-
         return redirect("source:list")  # Redirect to source list
 
     return render(
         request,
         "source/add_source.html",
         {
-            "source": source,
+            "source": source_obj,
             "companies": companies,
-            "selected_companies": selected_companies,  # Pass selected companies for pre-filling
+            "tagged_companies": tagged_companies,  # Pass selected companies for pre-filling
         },
     )
 
 
 @login_required
 def list_sources(request):
-    """List sources based on user role."""
-    if request.user.is_staff:
-        sources = Source.objects.all()  # Staff sees all sources
-    else:
-        sources = Source.objects.filter(
-            added_by=request.user,
-        )  # Users see only their sources
-
-    return render(request, "source/list_sources.html", {"sources": sources})
+    return render(request, "source/list_sources.html", {"sources": fetch_source_qs(request.user)})
 
 
 @login_required
@@ -91,5 +59,4 @@ def delete_source(request, source_id):
         source.delete()
         messages.success(request, "Source deleted successfully.")
         return redirect("source:list")
-
     return redirect("source:list")

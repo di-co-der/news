@@ -91,8 +91,10 @@ def signup(request):
             password=password,
             company=company,
         )
+        user = authenticate(request, email=email, password=password)
+        auth_login(request, user)
 
-        return redirect("users:login")
+        return redirect("source:add")
 
     return render(request, "users/signup.html", {"companies": companies})
 
@@ -105,10 +107,7 @@ def login(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             auth_login(request, user)
-            # Redirect user based on source availability
-            if (
-                not user.added_sources.exists()
-            ):  # If user has no sources, redirect to add source
+            if (not user.added_sources.exists()):
                 return redirect("source:add")
             return redirect("story:list")
         messages.error(request, "Invalid email or password!")

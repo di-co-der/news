@@ -2,48 +2,53 @@
 
 {% load static %}
 
+{% block title %}Add Source{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/story/add_story.css' %}">
+  <link rel="stylesheet" href="{% static 'css/source/add_source.css' %}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
-  <h2 class="form-title">Add Story</h2>
-  <form method="post" class="story-form">
-    {% csrf_token %}
+  <div class="add-source-container">
+    <h2>Add Source</h2>
+    <form method="post">
+      {% csrf_token %}
 
-    <!-- Title -->
-    <label for="title" class="form-label">Title:</label>
-    <input type="text" name="title" class="form-input" value="{{ story.title|default:'' }}" required />
+      <label for="name">Source Name:</label>
+      <input type="text" name="name" value="{{ source.name|default:'' }}" required />
 
-    <!-- Published Date -->
-    <label for="published_date" class="form-label">Published Date:</label>
-    <input type="date" name="published_date" class="form-input" value="{{ story.published_date|date:'Y-m-d' }}" required />
+      <label for="url">Source URL:</label>
+      <input type="url" name="url" value="{{ source.url|default:'' }}" required />
 
-    <!-- Body Text -->
-    <label for="body_text" class="form-label">Body Text:</label>
-    <textarea name="body_text" class="form-textarea" required>{{ story.body_text|default:'' }}</textarea>
+      <label for="companies">Tagged Companies:</label>
+      <select name="companies" id="companies" class="form-multi-select" multiple>
+        {% for company in companies %}
+          <option value="{{ company.id }}" {% if company.id in tagged_companies %}selected{% endif %}>{{ company.name }}</option>
+        {% endfor %}
+      </select>
 
-    <!-- Article URL -->
-    <label for="article_url" class="form-label">Article URL:</label>
-    <input type="url" name="article_url" class="form-input" value="{{ story.article_url|default:'' }}" required />
+      <!-- Add New Company Link -->
+      <p>
+        Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+      </p>
 
-    <!-- Tagged Companies -->
-    <label for="tagged_companies" class="form-label">Tagged Companies:</label>
-    <select name="tagged_companies" id="tagged_companies" class="form-multi-select" multiple>
-      {% for company in companies %}
-        <option value="{{ company.id }}" {% if company.id in selected_tagged_companies %}selected{% endif %}>
-          {{ company.company_name }}
-        </option>
-      {% endfor %}
-    </select>
+      <button type="submit">
+        {% if source %} Update {% else %} Add {% endif %} Source
+      </button>
+    </form>
+  </div>
+{% endblock %}
 
-    <!-- Add New Company Link -->
-    <p>
-      Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
-    </p>
-
-    <button type="submit" class="submit-button">
-      {% if story %} Update {% else %} Add {% endif %} Story
-    </button>
-  </form>
+{% block extra_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function() {
+        $('.form-multi-select').select2({
+            placeholder: "Select companies",
+            allowClear: true
+        });
+    });
+  </script>
 {% endblock %}

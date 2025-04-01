@@ -38,6 +38,7 @@ h2 {
 /* Multi-select Box */
 .add-source-container select {
     height: 100px;
+    color: black;
 }
 
 /* Button */
@@ -58,6 +59,6 @@ h2 {
 }
 
 .add-source-container select,
-.add-source-container select option {
+.add-source-container form select option {
     color: black;
 }
