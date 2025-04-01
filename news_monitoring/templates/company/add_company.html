@@ -2,6 +2,10 @@
 
 {% load static %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/add_company.css' %}" />
+{% endblock %}
+
 {% block content %}
   <h2>Add Company</h2>
   {% if error %}<p style="color: red;">{{ error }}</p>{% endif %}

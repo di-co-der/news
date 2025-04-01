@@ -11,8 +11,8 @@ class Story(models.Model):
         related_name="tagged_stories",
         blank=True,
     )
-    title = models.CharField(max_length=255)
-    source = models.ForeignKey(Source, on_delete=models.CASCADE, related_name="stories")
+
+    source = models.ForeignKey(Source, on_delete=models.CASCADE, related_name="stories", null=True, blank=True)
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
@@ -23,17 +23,20 @@ class Story(models.Model):
         on_delete=models.CASCADE,
         related_name="added_stories",
     )
-    published_date = models.DateField()
-    body_text = models.TextField()
-    article_url = models.URLField()
-    added_on = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         related_name="updated_stories",
     )
+
+    published_date = models.DateField()
+    added_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+
+    title = models.CharField(max_length=255)
+    body_text = models.TextField()
+    article_url = models.URLField()
 
     class Meta:
         unique_together = ("company", "article_url")  # Ensuring uniqueness per company

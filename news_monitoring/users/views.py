@@ -110,7 +110,7 @@ def login(request):
                 not user.added_sources.exists()
             ):  # If user has no sources, redirect to add source
                 return redirect("source:add")
-            return redirect("story:list_stories")
+            return redirect("story:list")
         messages.error(request, "Invalid email or password!")
 
     return render(request, "users/login.html")

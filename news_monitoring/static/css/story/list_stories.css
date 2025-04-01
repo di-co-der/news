@@ -1,0 +1,84 @@
+.page-title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.stories-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.story-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.story-card:hover {
+  transform: scale(1.02);
+}
+
+.story-title a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.story-title a:hover {
+  text-decoration: underline;
+}
+
+.story-date, .story-body, .story-companies {
+  font-size: 14px;
+  color: #333;
+}
+
+.story-body {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+/* Action Buttons */
+.story-actions {
+  margin-top: 15px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.edit-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #218838;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  margin-left: 10px;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.no-stories {
+  text-align: center;
+  font-size: 18px;
+  color: #777;
+}

@@ -1,8 +1,6 @@
-from django.shortcuts import redirect
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 from .models import Company
-
 
 def add_company(request):
     if request.method == "POST":
@@ -16,11 +14,21 @@ def add_company(request):
                 {"error": "All fields are required!"},
             )
 
-        # Creating company with 'added_by' as None (Unknown user)
-        Company.objects.create(name=name, domain=domain, added_by=None)
+        # Check if the user is logged in
+        if request.user.is_authenticated:
+            # Create the company with the logged-in user's email as added_by
+            added_by = request.user
+        else:
+            # Create the company with 'added_by' as None (Unknown user)
+            added_by = None
 
-        return redirect(
-            "users:signup",
-        )  # Redirect back to signup after adding a company
+        # Creating company with the appropriate 'added_by'
+        Company.objects.create(name=name, domain=domain, added_by=added_by)
+
+        # Redirect back to the page where the user came from
+        # Using the HTTP_REFERER header to get the previous page URL
+        referer = request.META.get('HTTP_REFERER', 'users:signup')  # Default to 'signup' if referer is not found
+        print(referer)
+        return HttpResponseRedirect(referer)
 
     return render(request, "company/add_company.html")

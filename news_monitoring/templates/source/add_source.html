@@ -4,7 +4,7 @@
 
 {% block title %}Add Source{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/add_source.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/source/add_source.css' %}" />
 {% endblock %}
 {% block content %}
   <div class="add-source-container">
@@ -22,6 +22,11 @@
                   {% if company.id in selected_companies %}selected{% endif %}>{{ company.company_name }}</option>
         {% endfor %}
       </select>
+
+      <!-- Add New Company Link -->
+      <p>
+        Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+      </p>
       <button type="submit">
         {% if source %}
           Update

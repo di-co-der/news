@@ -1,47 +1,49 @@
 {% extends "base.html" %}
 
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/story/add_story.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h2>Add Story</h2>
-  <form method="post">
+  <h2 class="form-title">Add Story</h2>
+  <form method="post" class="story-form">
     {% csrf_token %}
+
     <!-- Title -->
-    <label for="title">Title:</label>
-    <input type="text"
-           name="title"
-           value="{{ story.title|default:'' }}"
-           required />
+    <label for="title" class="form-label">Title:</label>
+    <input type="text" name="title" class="form-input" value="{{ story.title|default:'' }}" required />
+
     <!-- Published Date -->
-    <label for="published_date">Published Date:</label>
-    <input type="date"
-           name="published_date"
-           value="{{ story.published_date|date:'Y-m-d' }}"
-           required />
+    <label for="published_date" class="form-label">Published Date:</label>
+    <input type="date" name="published_date" class="form-input" value="{{ story.published_date|date:'Y-m-d' }}" required />
+
     <!-- Body Text -->
-    <label for="body_text">Body Text:</label>
-    <textarea name="body_text" required>{{ story.body_text|default:'' }}</textarea>
+    <label for="body_text" class="form-label">Body Text:</label>
+    <textarea name="body_text" class="form-textarea" required>{{ story.body_text|default:'' }}</textarea>
+
     <!-- Article URL -->
-    <label for="article_url">Article URL:</label>
-    <input type="url"
-           name="article_url"
-           value="{{ story.article_url|default:'' }}"
-           required />
+    <label for="article_url" class="form-label">Article URL:</label>
+    <input type="url" name="article_url" class="form-input" value="{{ story.article_url|default:'' }}" required />
+
     <!-- Tagged Companies -->
-    <label for="tagged_companies">Tagged Companies:</label>
-    <select name="tagged_companies" id="tagged_companies" multiple>
+    <label for="tagged_companies" class="form-label">Tagged Companies:</label>
+    <select name="tagged_companies" id="tagged_companies" class="form-multi-select" multiple>
       {% for company in companies %}
-        <option value="{{ company.id }}"
-                {% if company.id in selected_tagged_companies %}selected{% endif %}>
+        <option value="{{ company.id }}" {% if company.id in selected_tagged_companies %}selected{% endif %}>
           {{ company.company_name }}
         </option>
       {% endfor %}
     </select>
-    <button type="submit">
-      {% if story %}
-        Update
-      {% else %}
-        Add
-      {% endif %}
-      Story
+
+    <!-- Add New Company Link -->
+    <p>
+      Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+    </p>
+
+    <button type="submit" class="submit-button">
+      {% if story %} Update {% else %} Add {% endif %} Story
     </button>
   </form>
 {% endblock %}

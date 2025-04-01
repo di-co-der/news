@@ -32,6 +32,7 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    color: black;
 }
 
 /* Multi-select Box */
@@ -54,4 +55,9 @@ h2 {
 
 .add-source-container button:hover {
     background: #555;
+}
+
+.add-source-container select,
+.add-source-container select option {
+    color: black;
 }

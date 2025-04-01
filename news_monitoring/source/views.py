@@ -1,13 +1,10 @@
-from django.contrib import messages
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 
-# Create your views here.
-from django.shortcuts import redirect
-from django.shortcuts import render
-
-from ..company.models import Company
-from .models import Source
+from news_monitoring.company.models import Company
+from news_monitoring.source.models import Source
 
 
 @login_required
@@ -23,13 +20,14 @@ def add_or_edit_source(request, source_id=None):
             source = get_object_or_404(Source, id=source_id, added_by=request.user)
 
         # Get selected companies for pre-filling
-        selected_companies = source.companies.values_list("id", flat=True)
+        selected_companies = source.tagged_companies.values_list("id", flat=True)
 
     companies = Company.objects.all()  # Fetch all companies
 
     if request.method == "POST":
         name = request.POST.get("name")
         url = request.POST.get("url")
+        company = request.user.company
         selected_companies = list(
             map(int, request.POST.getlist("companies")),
         )  # Ensure IDs are integers
@@ -50,13 +48,14 @@ def add_or_edit_source(request, source_id=None):
             # Updating existing source
             source.name = name
             source.url = url
+            source.company = company
             source.save()
         else:
             # Creating new source
-            source = Source.objects.create(name=name, url=url, added_by=request.user)
+            source = Source.objects.create(name=name, url=url, company=company, added_by=request.user)
 
         # Assign selected companies
-        source.companies.set(selected_companies)
+        source.tagged_companies.set(selected_companies)
 
         return redirect("source:list")  # Redirect to source list
 

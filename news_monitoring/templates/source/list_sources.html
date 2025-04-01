@@ -4,7 +4,7 @@
 
 {% block title %}View Sources{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/list_sources.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/source/list_sources.css' %}" />
 {% endblock %}
 {% block content %}
   <h2>Sources List</h2>
@@ -26,8 +26,8 @@
               <a href="{{ source.url }}" target="_blank">{{ source.url }}</a>
             </td>
             <td>
-              {% for company in source.companies.all %}
-                {{ company.company_name }}
+              {% for company in source.tagged_companies.all %}
+                {{ company.name }}
                 {% if not forloop.last %},{% endif %}
               {% endfor %}
             </td>
