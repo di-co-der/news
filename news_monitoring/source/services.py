@@ -37,7 +37,8 @@ def update_or_create_source(source, user, name, url, company, tagged_companies):
     else:
         source = Source.objects.create(name=name, url=url, company=company, added_by=user)
     source.tagged_companies.set(tagged_companies)
-    print(source)
+    # print(source)
+    # todo: check old and new url if same dont run import_stories_from_feed
     import_stories_from_feed(source, user)
 
 
@@ -45,8 +46,8 @@ def validate_form_data(user, payload, source_obj):
     name = payload.get("name")
     url = payload.get("url")
     company = user.company
-    tagged_companies = list(map(int, payload.getlist("companies")))
-
+    tagged_companies = payload.getlist("tagged_companies")
+    # print(payload)
     if name and url:
         update_or_create_source(source_obj, user, name, url, company, tagged_companies)
         return True

@@ -21,8 +21,8 @@
       <label for="url">Source URL:</label>
       <input type="url" name="url" value="{{ source.url|default:'' }}" required />
 
-      <label for="companies">Tagged Companies:</label>
-      <select name="companies" id="companies" multiple>
+      <label for="tagged_companies">Tagged Companies:</label>
+      <select name="tagged_companies" id="companies" multiple>
         {% for company in companies %}
           <option value="{{ company.id }}" {% if company.id in tagged_companies %}selected{% endif %}>{{ company.name }}</option>
         {% endfor %}
