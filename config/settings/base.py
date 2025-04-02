@@ -45,12 +45,21 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASE_URL = "postgres://postgres:postgres@127.0.0.1:5432/news_monitoring"  # In future remove this from here plave in .env file.
+# DATABASE_URL = "postgres://postgres:postgres@127.0.0.1:5432/news_monitoring"  # In future remove this from here plave in .env file.
 DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default="postgres:///news_monitoring",
-    ),
+    # "default": env.db(
+    #     "DATABASE_URL",
+    #     default="postgres:///news_monitoring",
+    # ),
+    'default': {  # Name of your new database connection
+        'ENGINE': 'django.db.backends.postgresql',  # Or the appropriate engine (e.g., mysql, sqlite)
+        'NAME': 'news_monitoring_db',  # Name of the second database
+        'USER': 'postgres',  # User for the second database
+        'PASSWORD': 'postgres',  # Password for the second database
+        'HOST': 'localhost',  # Or the host of the second database
+        'PORT': '5432',  # Port for the second database (if different)
+        # Add any other database-specific settings here, like 'OPTIONS' or 'TEST'
+    },
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
