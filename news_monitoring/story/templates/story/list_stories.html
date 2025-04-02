@@ -4,6 +4,8 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/story/list_stories.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+
 {% endblock %}
 
 {% block content %}
@@ -69,33 +71,74 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const searchInput = document.getElementById("search-title");
-      const filterDate = document.getElementById("filter-date");
-      const storiesList = document.getElementById("stories-list");
-
-      function filterStories() {
-        const searchValue = searchInput.value.toLowerCase();
-        const selectedDate = filterDate.value;
-
-        document.querySelectorAll(".story-card").forEach(story => {
-          const title = story.getAttribute("data-title");
-          const date = story.getAttribute("data-date");
-
-          const matchesTitle = title.includes(searchValue);
-          const matchesDate = selectedDate === "" || date === selectedDate;
-
-          if (matchesTitle && matchesDate) {
-            story.style.display = "block";
-          } else {
-            story.style.display = "none";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+  $(document).ready(function() {
+        console.log("jQuery is loaded!");
+    });
+</script>
+<script>
+  $(document).ready(function() {
+      // jQuery UI Autocomplete for search input
+      $("#search-title").autocomplete({
+          source: function(request, response) {
+              $.ajax({
+                  url: "{% url 'story:autocomplete' %}",
+                  dataType: "json",
+                  data: {
+                      q: request.term
+                  },
+                  success: function(data) {
+                      response(data);
+                  }
+              });
+          },
+          minLength: 2, // Start suggesting after 2 characters
+          select: function(event, ui) {
+              $("#search-title").val(ui.item.value);
+              fetchStories();  // Fetch results after selection
           }
-        });
+      });
+
+      function fetchStories() {
+          const query = $("#search-title").val();
+          const date = $("#filter-date").val();
+
+          $.ajax({
+              url: "{% url 'story:search' %}",
+              data: { q: query, date: date },
+              dataType: "json",
+              success: function(data) {
+                  $("#stories-list").empty();  // Clear previous results
+
+                  if (data.stories.length === 0) {
+                      $("#stories-list").append("<p>No results found.</p>");
+                      return;
+                  }
+
+                  data.stories.forEach(story => {
+                      $("#stories-list").append(`
+                          <div class="story-card">
+                              <h3 class="story-title">
+                                  <a href="${story.article_url}" target="_blank">${story.title}</a>
+                              </h3>
+                              <p class="story-date"><strong>Published Date:</strong> ${story.published_date}</p>
+                              <p class="story-body">${story.body_text}</p>
+                              <p class="story-companies"><strong>Tagged Companies:</strong> ${story.tagged_companies.join(", ")}</p>
+                              <div class="story-actions">
+                                  <a href="/story/edit/${story.id}/" class="btn edit-btn">Edit</a>
+                                  <a href="/story/delete/${story.id}/" class="btn delete-btn" onclick="return confirm('Are you sure?');">Delete</a>
+                              </div>
+                          </div>`);
+                  });
+              }
+          });
       }
 
-      searchInput.addEventListener("input", filterStories);
-      filterDate.addEventListener("change", filterStories);
-    });
-  </script>
+      $("#search-title").on("input", fetchStories);
+      $("#filter-date").on("change", fetchStories);
+  });
+</script>
+
 {% endblock %}
