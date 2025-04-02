@@ -16,13 +16,12 @@ def add_or_edit_source(request, source_id=None):
     source_obj = None
     tagged_companies = []
 
-    if source_id:
-        source_obj, tagged_companies = fetch_source_obj(user, source_id)
-
     if request.method == "POST":
-        is_validated = validate_form_data(user, request.POST, source_obj)
+        is_validated, msg = validate_form_data(user, request.POST, source_id)
+        print(is_validated)
 
         if not is_validated:
+            # messages.error(request, "Name and URL are required!")
             render(
                 request,
                 "source/add_source.html",
@@ -33,7 +32,11 @@ def add_or_edit_source(request, source_id=None):
                     "tagged_companies": tagged_companies.values_list("id", flat=True) if tagged_companies else []
                 }
             )
-        return redirect("source:list")  # Redirect to source list
+        else:
+            return redirect("source:list")
+
+    if source_id:
+        source_obj, tagged_companies = fetch_source_obj(user, source_id)
 
     return render(
         request,

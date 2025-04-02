@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .models import Company
@@ -27,8 +28,9 @@ def add_company(request):
 
         # Redirect back to the page where the user came from
         # Using the HTTP_REFERER header to get the previous page URL
-        referer = request.META.get('HTTP_REFERER', 'users:signup')  # Default to 'signup' if referer is not found
-        print(referer)
-        return HttpResponseRedirect(referer)
+        # referer = request.META.get('HTTP_REFERER', 'home')  # Default to 'signup' if referer is not found
+        # print(referer)
+        messages.success(request,"Company Added Succesfully")
+        return redirect("company:add_company")
 
     return render(request, "company/add_company.html")
