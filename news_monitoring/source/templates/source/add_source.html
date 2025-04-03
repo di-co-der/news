@@ -12,6 +12,9 @@
 {% block content %}
   <div class="add-source-container">
     <h2>Add Source</h2>
+    {% if messages %}
+      {% for message in messages %}<p class="error-message">{{ message }}</p>{% endfor %}
+    {% endif %}
     <form method="post">
       {% csrf_token %}
 

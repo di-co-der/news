@@ -19,19 +19,20 @@ def fetch_story_qs(user):
     return stories_qs
 
 def validate_form_data(user, payload, story):
-    print(story)
     title = payload.get("title")
     body_text = payload.get("body_text")
     published_date = payload.get("published_date")
     article_url = payload.get("article_url")
     tagged_companies = payload.getlist("tagged_companies")
     is_validated = False
+
     if title and article_url:
         is_validated = True
         update_or_create_story(story, user, title, body_text, published_date, article_url, tagged_companies)
     return is_validated
 
 def update_or_create_story(story, user, title, body_text, published_date, article_url, tagged_companies):
+
     if story:
         story.title = title
         story.body_text = body_text
@@ -40,7 +41,6 @@ def update_or_create_story(story, user, title, body_text, published_date, articl
         story.updated_by = user
         story.save()
     else:
-        # Create new story
         story = Story.objects.create(
             title=title,
             body_text=body_text,
@@ -50,6 +50,4 @@ def update_or_create_story(story, user, title, body_text, published_date, articl
             company=user.company,
         )
 
-    # Assign tagged companies
     story.tagged_companies.set(tagged_companies)
-    pass

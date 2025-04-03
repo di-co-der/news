@@ -1,5 +1,7 @@
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.shortcuts import render
 from django.contrib import messages
@@ -63,3 +65,48 @@ def delete(request, story_id):
     story.delete()
     messages.success(request, "Story deleted successfully.")
     return redirect("story:list")
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# API
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+@login_required
+def autocomplete_stories(request):
+    """API endpoint for jQuery autocomplete"""
+    search_query = request.GET.get('q', '').strip()
+
+    if search_query:
+        stories_qs = fetch_story_qs(request.user).filter(title__icontains=search_query)
+        suggestions = list(stories_qs.values_list('title', flat=True)[:10])  # Limit results to 10
+    else:
+        suggestions = []
+
+    return JsonResponse(suggestions, safe=False)
+
+@login_required
+def search_stories(request):
+    """API endpoint for live search"""
+    search_query = request.GET.get('q', '').strip()
+    filter_date = request.GET.get('date', '').strip()
+
+    stories_qs = fetch_story_qs(request.user)
+
+    if search_query:
+        stories_qs = stories_qs.filter(title__icontains=search_query)
+
+    if filter_date:
+        stories_qs = stories_qs.filter(published_date=filter_date)
+
+    results = [
+        {
+            "id": story.id,
+            "title": story.title,
+            "article_url": story.article_url,
+            "published_date": story.published_date.strftime('%Y-%m-%d'),
+            "body_text": story.body_text[:100] + "..." if len(story.body_text) > 100 else story.body_text,
+            "tagged_companies": [company.name for company in story.tagged_companies.all()]
+        }
+        for story in stories_qs[:10]  # Limit results for performance
+    ]
+
+    return JsonResponse({"stories": results})
