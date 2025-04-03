@@ -1,11 +1,11 @@
-import feedparser
 import time
 from datetime import datetime
-from bs4 import BeautifulSoup
 
-from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
+import feedparser
+from bs4 import BeautifulSoup
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 
 from news_monitoring.source.models import Source
 from news_monitoring.story.models import Story
@@ -48,7 +48,7 @@ def update_or_create_source(user, name, url, company, tagged_companies, source=N
         else:
             source = Source.objects.create(name=name, url=url, company=company, added_by=user)
         source.tagged_companies.set(tagged_companies)
-        import_stories_from_feed(source, user)
+        # import_stories_from_feed(source, user)
         return True
     except IntegrityError as e:
         print(f"Database error while updating/creating source: {e}")

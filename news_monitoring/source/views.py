@@ -1,11 +1,10 @@
-
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 
 from news_monitoring.company.models import Company
-from news_monitoring.source.models import Source
-from news_monitoring.source.services import fetch_source_obj, validate_form_data, fetch_source_qs
+from news_monitoring.source.services import fetch_source_obj, validate_form_data, fetch_source_qs, \
+    import_stories_from_feed
 
 
 @login_required
@@ -44,7 +43,7 @@ def add_or_edit_source(request, source_id=None):
         {
             "source": source_obj,
             "companies": companies,
-            "tagged_companies": tagged_companies,  # Pass selected companies for pre-filling
+            "tagged_companies": tagged_companies,
         },
     )
 
@@ -62,4 +61,17 @@ def delete_source(request, source_id):
         source.delete()
         messages.success(request, "Source deleted successfully.")
         return redirect("source:list")
+    return redirect("source:list")
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+from .models import Source
+
+
+@csrf_exempt
+def fetch_story(request, source_id):
+    if request.method == "POST":
+        source = get_object_or_404(Source, id=source_id)
+        import_stories_from_feed(source, request.user)
     return redirect("source:list")

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .models import Company
 
 def add_company(request):
@@ -34,3 +34,11 @@ def add_company(request):
         return redirect("company:add_company")
 
     return render(request, "company/add_company.html")
+
+def search_companies(request):
+    """API endpoint to search companies."""
+    query = request.GET.get("q", "").strip()
+    companies = Company.objects.filter(name__icontains=query)[:10]  # Limit results to 10
+
+    results = [{"id": company.id, "name": company.name} for company in companies]
+    return JsonResponse(results, safe=False)

@@ -5,53 +5,90 @@
 {% block title %}Add Source{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/source/add_source.css' %}" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/source/add_source.css' %}"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-  <div class="add-source-container">
-    <h2>Add Source</h2>
-    {% if messages %}
-      {% for message in messages %}<p class="error-message">{{ message }}</p>{% endfor %}
-    {% endif %}
-    <form method="post">
-      {% csrf_token %}
+<div class="add-source-container">
+  <h2>Add Source</h2>
+  {% if messages %}
+  {% for message in messages %}<p class="error-message">{{ message }}</p>{% endfor %}
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
 
-      <label for="name">Source Name:</label>
-      <input type="text" name="name" value="{{ source.name|default:'' }}" required />
+    <label for="name">Source Name:</label>
+    <input type="text" name="name" value="{{ source.name|default:'' }}" required/>
 
-      <label for="url">Source URL:</label>
-      <input type="url" name="url" value="{{ source.url|default:'' }}" required />
+    <label for="url">Source URL:</label>
+    <input type="url" name="url" value="{{ source.url|default:'' }}" required/>
 
-      <label for="tagged_companies">Tagged Companies:</label>
-      <select name="tagged_companies" id="companies" multiple>
-        {% for company in companies %}
-          <option value="{{ company.id }}" {% if company.id in tagged_companies %}selected{% endif %}>{{ company.name }}</option>
-        {% endfor %}
-      </select>
+    <label for="tagged_companies">Tagged Companies:</label>
+    <select name="tagged_companies" id="companies" multiple>
+      {% for company in companies %}
+      <option value="{{ company.id }}" {% if company.id in tagged_companies %}selected{% endif %}>{{ company.name }}
+      </option>
+      {% endfor %}
+    </select>
 
-      <!-- Add New Company Link -->
-      <p>
-        Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
-      </p>
+    <!-- Add New Company Link -->
+    <p>
+      Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+    </p>
 
-      <button type="submit">
-        {% if source %} Update {% else %} Add {% endif %} Source
-      </button>
-    </form>
-  </div>
+    <button type="submit">
+      {% if source %} Update {% else %} Add {% endif %} Source
+    </button>
+  </form>
+</div>
 {% endblock %}
 
 {% block extra_js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-  <script>
-    $(document).ready(function() {
-        $('#companies').select2({
-            placeholder: "Select companies",
-            allowClear: true
-        });
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#companies').select2({
+          placeholder: "Search companies",
+          ajax: {
+              url: "{% url 'company:search_companies' %}",
+              dataType: "json",
+              delay: 250,
+              data: function(params) {
+                  return { q: params.term };
+              },
+              processResults: function(data) {
+                  return {
+                      results: $.map(data, function(company) {
+                          return { id: company.id, text: company.name };
+                      })
+                  };
+              },
+              cache: true
+          },
+          minimumInputLength: 2, // Start searching after 2 characters
+          allowClear: true
+      });
+  });
+</script>
+<script>
+  $(document).ready(function() {
+    $('.fetch-story-btn').on('click', function() {
+      var sourceId = $(this).data('source-id');
+
+      $.ajax({
+        url: `/fetch-story/${sourceId}/`,
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        success: function(response) {
+          alert(response.message);
+        },
+        error: function() {
+          alert('Failed to fetch story. Please try again.');
+        }
+      });
     });
-  </script>
+  });
+</script>
 {% endblock %}

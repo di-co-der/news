@@ -40,20 +40,58 @@
 
       <!-- Company Dropdown -->
       <label for="company">Company:</label>
-      <select name="company">
-        <option value="">Select a Company</option>
-        {% for company in companies %}
-          <option value="{{ company.id }}">{{ company.name }}</option>
-        {% endfor %}
-      </select>
+<input type="text" name="company" id="company" placeholder="Search and select a company" autocomplete="off">
 
-      <!-- Add New Company Link -->
-      <p>
-        Don't see your company? <a href="{% url 'company:add_company' %}">Add a new company</a>
-      </p>
+<!-- Hidden field to store selected company ID -->
+<input type="hidden" name="company_id" id="company_id">
 
-      <!-- Submit Button -->
-      <button type="submit">Register</button>
-    </form>
-  </div>
+<!-- Add New Company Link -->
+<p>
+    Don't see your company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+</p>
+
+<!-- Submit Button -->
+<button type="submit">Register</button>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.min.css">
+
+<script>
+    $(document).ready(function() {
+        $("#company").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "{% url 'company:search_companies' %}",
+                    dataType: "json",
+                    data: { q: request.term },
+                    success: function(data) {
+                        response($.map(data, function(company) {
+                            return {
+                                label: company.name,  // What user sees
+                                value: company.name,  // What is filled in the input
+                                id: company.id        // Hidden ID
+                            };
+                        }));
+                    }
+                });
+            },
+            minLength: 2, // Start suggesting after 2 characters
+            select: function(event, ui) {
+                $("#company").val(ui.item.value);  // Set input value
+                $("#company_id").val(ui.item.id);  // Store selected company ID
+                return false;
+            }
+        });
+
+        // Prevent manual entry of invalid values
+        $("#company").on("blur", function() {
+            if ($("#company_id").val() === "") {
+                $("#company").val(""); // Clear input if no valid selection
+            }
+        });
+    });
+</script>
 {% endblock %}

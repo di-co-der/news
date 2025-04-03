@@ -5,64 +5,83 @@
 {% block title %}View Sources{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/source/list_sources.css' %}" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/source/list_sources.css' %}"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-  <h2>Sources List</h2>
+<h2>Sources List</h2>
 
-  <label for="search-source">Search Source:</label>
-  <input type="text" id="search-source" placeholder="Search by name..." class="search-input" />
+<label for="search-source">Search Source:</label>
+<input type="text" id="search-source" placeholder="Search by name..." class="search-input"/>
 
-  {% if sources %}
-    <table class="source-table" id="source-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>URL</th>
-          <th>Tagged Companies</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for source in sources %}
-          <tr class="source-row">
-            <td class="source-name">{{ source.name }}</td>
-            <td>
-              <a href="{{ source.url }}" target="_blank">{{ source.url }}</a>
-            </td>
-            <td>
-              {% for company in source.tagged_companies.all %}
-                {{ company.name }}{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            </td>
-            <td>
-              <a href="{% url 'source:edit' source.id %}" class="edit-btn">Edit</a>
-              <form action="{% url 'source:delete' source.id %}" method="post" class="delete-form">
-                {% csrf_token %}
-                <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this source?');">Delete</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No sources available.</p>
-  {% endif %}
+{% if sources %}
+<table class="source-table" id="source-table">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>URL</th>
+    <th>Tagged Companies</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for source in sources %}
+  <tr class="source-row">
+    <td class="source-name">{{ source.name }}</td>
+    <td>
+      <a href="{{ source.url }}" target="_blank">{{ source.url }}</a>
+    </td>
+    <td>
+      {% for company in source.tagged_companies.all %}
+      {{ company.name }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </td>
+    <td>
+      <a href="{% url 'source:edit' source.id %}" class="edit-btn">Edit</a>
+      <form action="{% url 'source:delete' source.id %}" method="post" class="delete-form">
+        {% csrf_token %}
+        <button type="submit" class="delete-btn"
+                onclick="return confirm('Are you sure you want to delete this source?');">Delete
+        </button>
+      </form>
+      <button class="fetch-story-btn" data-source-id="{{ source.id }}">Fetch Story</button>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p id="fetch-message" style="display: none; color: green;">Story fetched successfully.</p>
+{% else %}
+<p>No sources available.</p>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('#search-source').on('keyup', function() {
-        var value = $(this).val().toLowerCase();
-        $('.source-row').filter(function() {
-          $(this).toggle($(this).find('.source-name').text().toLowerCase().includes(value));
-        });
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#search-source').on('keyup', function() {
+      var value = $(this).val().toLowerCase();
+      $('.source-row').filter(function() {
+        $(this).toggle($(this).find('.source-name').text().toLowerCase().includes(value));
       });
     });
-  </script>
+
+    $('.fetch-story-btn').on('click', function() {
+      var sourceId = $(this).data('source-id');
+      $.ajax({
+        url: `/source/fetch-story/${sourceId}/`,
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        success: function(response) {
+          $('#fetch-message').show().delay(2000).fadeOut();
+        },
+        error: function() {
+          alert('Failed to fetch story. Please try again.');
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

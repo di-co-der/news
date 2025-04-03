@@ -46,6 +46,7 @@
     </button>
   </form>
 {% endblock %}
+
 <!--todo : Write this in Sepearte File because it is used in both add_source and add_story-->
 {% block extra_js %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -53,7 +54,24 @@
   <script>
     $(document).ready(function() {
         $('#companies').select2({
-            placeholder: "Select companies",
+            placeholder: "Search companies",
+            ajax: {
+                url: "{% url 'company:search_companies' %}",
+                dataType: "json",
+                delay: 250,
+                data: function(params) {
+                    return { q: params.term };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(company) {
+                            return { id: company.id, text: company.name };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2, // Start searching after 2 characters
             allowClear: true
         });
     });
