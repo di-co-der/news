@@ -3,77 +3,106 @@
 {% load static %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/story/add_story.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'story/css/add_story.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-  <h2 class="form-title">Add Story</h2>
-  <form method="post" class="story-form">
-    {% csrf_token %}
+<h2 class="form-title">Add Story</h2>
+<form method="post" class="story-form">
+  {% csrf_token %}
 
-    <!-- Title -->
-    <label for="title" class="form-label">Title:</label>
-    <input type="text" name="title" class="form-input" value="{{ story.title|default:'' }}" required />
+  <!-- Title -->
+  <label for="title" class="form-label">Title:</label>
+  <input type="text" name="title" class="form-input" value="{{ story.title|default:'' }}" required/>
 
-    <!-- Published Date -->
-    <label for="published_date" class="form-label">Published Date:</label>
-    <input type="date" name="published_date" class="form-input" value="{{ story.published_date|date:'Y-m-d' }}" required />
+  <!-- Published Date -->
+  <label for="published_date" class="form-label">Published Date:</label>
+  <input type="date" name="published_date" class="form-input" value="{{ story.published_date|date:'Y-m-d' }}" required/>
 
-    <!-- Body Text -->
-    <label for="body_text" class="form-label">Body Text:</label>
-    <textarea name="body_text" class="form-textarea" required>{{ story.body_text|default:'' }}</textarea>
+  <!-- Body Text -->
+  <label for="body_text" class="form-label">Body Text:</label>
+  <textarea name="body_text" class="form-textarea" required>{{ story.body_text|default:'' }}</textarea>
 
-    <!-- Article URL -->
-    <label for="article_url" class="form-label">Article URL:</label>
-    <input type="url" name="article_url" class="form-input" value="{{ story.article_url|default:'' }}" required />
+  <!-- Article URL -->
+  <label for="article_url" class="form-label">Article URL:</label>
+  <input type="url" name="article_url" class="form-input" value="{{ story.article_url|default:'' }}" required/>
 
-    <!-- Tagged Companies -->
-    <label for="tagged_companies">Tagged Companies:</label>
-    <select name="tagged_companies" id="companies" multiple>
-      {% for company in companies %}
-      <option value="{{ company.id }}" {% if company.id in tagged_companies %}selected{% endif %}>{{ company.name }}</option>
-      {% endfor %}
-    </select>
+  <!-- Tagged Companies -->
+  <label for="tagged_companies">Tagged Companies:</label>
+  <pre>{{ tagged_companies }}</pre>
 
-    <!-- Add New Company Link -->
-    <p>
-      Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
-    </p>
+  <select name="tagged_companies" id="companies" multiple>
+    {% for company in companies %}
+    <option value="{{ company.id }}" {% if company.id in tagged_companies %}selected{% endif %}>{{ company.name }}
+    </option>
+    {% endfor %}
+  </select>
 
-    <button type="submit" class="submit-button">
-      {% if story %} Update {% else %} Add {% endif %} Story
-    </button>
-  </form>
+
+  <!-- Add New Company Link -->
+  <p>
+    Don't see enough company? <a href="{% url 'company:add_company' %}">Add a new company</a>
+  </p>
+
+  <button type="submit" class="submit-button">
+    {% if story %} Update {% else %} Add {% endif %} Story
+  </button>
+</form>
 {% endblock %}
 
 <!--todo : Write this in Sepearte File because it is used in both add_source and add_story-->
 {% block extra_js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-  <script>
-    $(document).ready(function() {
-        $('#companies').select2({
-            placeholder: "Search companies",
-            ajax: {
-                url: "{% url 'company:search_companies' %}",
-                dataType: "json",
-                delay: 250,
-                data: function(params) {
-                    return { q: params.term };
-                },
-                processResults: function(data) {
-                    return {
-                        results: $.map(data, function(company) {
-                            return { id: company.id, text: company.name };
-                        })
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2, // Start searching after 2 characters
-            allowClear: true
-        });
-    });
-  </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+  var companySearch = "{% url 'company:search_companies' %}";
+</script>
+<script src="{% static 'js/select.js' %}"></script>
+<!--<script>-->
+<!--  $(document).ready(function() {-->
+<!--      let preselectedCompanies = {{ tagged_companies|safe }};  // Get preselected companies from Django-->
+
+<!--      // Initialize the input field with preselected companies-->
+<!--      if (preselectedCompanies.length > 0) {-->
+<!--          let selectedNames = preselectedCompanies.map(company => company.name).join(", ");-->
+<!--          $("#companies-autocomplete").val(selectedNames);-->
+<!--      }-->
+
+<!--      $("#companies-autocomplete").autocomplete({-->
+<!--          source: function(request, response) {-->
+<!--              $.ajax({-->
+<!--                  url: "{% url 'company:search_companies' %}",  // Adjust to your API-->
+<!--                  dataType: "json",-->
+<!--                  data: { q: request.term },-->
+<!--                  success: function(data) {-->
+<!--                      response($.map(data, function(company) {-->
+<!--                          return { label: company.name, value: company.id };-->
+<!--                      }));-->
+<!--                  }-->
+<!--              });-->
+<!--          },-->
+<!--          minLength: 2,-->
+<!--          select: function(event, ui) {-->
+<!--              let selectedVal = ui.item.value;-->
+<!--              let selectedText = ui.item.label;-->
+
+<!--              // Avoid duplicates in <select>-->
+<!--              if ($("#companies-select option[value='" + selectedVal + "']").length === 0) {-->
+<!--                  $("#companies-select").append(new Option(selectedText, selectedVal, true, true));-->
+<!--              }-->
+
+<!--              // Update text input with selected companies-->
+<!--              let selectedCompanies = $("#companies-select option").map(function() {-->
+<!--                  return this.text;-->
+<!--              }).get().join(", ");-->
+
+<!--              $("#companies-autocomplete").val(selectedCompanies);-->
+
+<!--              return false; // Prevent default input behavior-->
+<!--          }-->
+<!--      });-->
+<!--  });-->
+<!--</script>-->
+
 {% endblock %}

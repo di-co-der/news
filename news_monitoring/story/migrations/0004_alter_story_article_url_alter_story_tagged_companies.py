@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('company', '0002_rename_company_url_company_domain_and_more'),
         ('story', '0003_alter_story_source'),
@@ -12,12 +11,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='story',
+            model_name='css',
             name='article_url',
             field=models.URLField(max_length=500),
         ),
         migrations.AlterField(
-            model_name='story',
+            model_name='css',
             name='tagged_companies',
             field=models.ManyToManyField(blank=True, null=True, related_name='tagged_stories', to='company.company'),
         ),

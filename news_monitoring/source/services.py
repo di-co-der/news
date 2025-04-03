@@ -3,8 +3,9 @@ from datetime import datetime
 
 import feedparser
 from bs4 import BeautifulSoup
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
+from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from news_monitoring.source.models import Source
@@ -12,43 +13,75 @@ from news_monitoring.story.models import Story
 
 
 def fetch_source_qs(user):
+    """Fetch sources based on user permissions with optimized queries."""
     try:
-        if user.is_staff:
-            return Source.objects.all()  # Staff sees all sources
-        return Source.objects.filter(company=user.company)
+        queryset = Source.objects.select_related("company").prefetch_related("tagged_companies")
+        if not user.is_staff:
+            queryset = queryset.filter(company=user.company)
+        return queryset
     except Exception as e:
         print(f"Error fetching sources: {e}")
         return Source.objects.none()
 
 
+def get_filtered_sources(user, search_query):
+    """Fetch sources filtered by user and search query."""
+    sources_qs = fetch_source_qs(user)  # Fetch base queryset
+
+    if search_query:
+        sources_qs = sources_qs.filter(name__icontains=search_query)  # Apply search filter
+
+    return sources_qs
+
+
+def get_sources_json(sources_qs, page_number):
+    """Return paginated sources as JSON."""
+    paginator = Paginator(sources_qs, 10)  # Paginate results
+    page_obj = paginator.get_page(page_number)
+
+    sources_data = [
+        {
+            "id": source.id,
+            "name": source.name,
+            "url": source.url,
+            "tagged_companies": [company.name for company in source.tagged_companies.all()],
+        }
+        for source in page_obj
+    ]
+
+    return JsonResponse({"sources": sources_data, "has_next": page_obj.has_next()})
+
+
 def fetch_source_obj(user, source_id):
+    """Fetch a single source with tagged companies using optimized queries."""
     try:
+        queryset = Source.objects.select_related("company").prefetch_related("tagged_companies")
         if user.is_staff:
-            source_obj = get_object_or_404(Source, id=source_id)
+            source_obj = get_object_or_404(queryset, id=source_id)
         else:
-            source_obj = get_object_or_404(Source, id=source_id, company=user.company)
-        tagged_companies = source_obj.tagged_companies.values_list("id", flat=True)
-        return (source_obj, tagged_companies)
-    except ObjectDoesNotExist:
-        print("Error: Source not found.")
-        return (None, [])
+            source_obj = get_object_or_404(queryset, id=source_id, company=user.company)
+        return source_obj, list(source_obj.tagged_companies.values_list("id", flat=True))
     except Exception as e:
-        print(f"Unexpected error fetching source object: {e}")
-        return (None, [])
+        print(f"Error fetching source object: {e}")
+        return None, []
 
 
 def update_or_create_source(user, name, url, company, tagged_companies, source=None):
+    """Create or update a source with optimized database transactions."""
     try:
-        if source:
-            source.name = name
-            source.url = url
-            source.company = company
-            source.updated_by = user
-            source.save()
-        else:
-            source = Source.objects.create(name=name, url=url, company=company, added_by=user)
-        source.tagged_companies.set(tagged_companies)
-        # import_stories_from_feed(source, user)
+        with transaction.atomic():
+            if source:
+                source.name = name
+                source.url = url
+                source.company = company
+                source.updated_by = user
+                source.save(update_fields=["name", "url", "company", "updated_by"])
+            else:
+                source = Source.objects.create(name=name, url=url, company=company, added_by=user)
+
+            if tagged_companies:
+                source.tagged_companies.set(tagged_companies)  # Efficient M2M update
+
         return True
     except IntegrityError as e:
         print(f"Database error while updating/creating source: {e}")
@@ -59,38 +92,41 @@ def update_or_create_source(user, name, url, company, tagged_companies, source=N
 
 
 def validate_form_data(user, payload, source_id):
+    """Validate form data and create/update the source."""
     try:
-        source_data_tuple = (None, None)
         name = payload.get("name")
         url = payload.get("url")
         company = user.company
         tagged_companies = payload.getlist("tagged_companies")
 
         if name and url:
-            if source_id:
-                source_data_tuple = fetch_source_obj(user, source_id)
-            update_or_create_source(user, name, url, company, tagged_companies, source_data_tuple[0])
-            return True, "Success"
-        return False, "Name and URL are required Fields."
+            source, _ = fetch_source_obj(user, source_id) if source_id else (None, [])
+            success = update_or_create_source(user, name, url, company, tagged_companies, source)
+            return success, "Success" if success else "Error updating source"
+        return False, "Name and URL are required fields."
     except Exception as e:
         print(f"Error validating form data: {e}")
-        return False, "Error Occured"
+        return False, "Error occurred"
 
 
 def import_stories_from_feed(source, user):
+    """Fetch and save new stories from the source feed."""
     try:
         feed = feedparser.parse(source.url)
+        new_stories = []
+
         for entry in feed.entries:
-            if not Story.objects.filter(article_url=entry.link).exists():
-                published_date = None
-                if hasattr(entry, 'published_parsed'):
-                    published_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+            if Story.objects.filter(article_url=entry.link).exists():
+                continue  # Skip if story already exists
 
-                body_text = entry.get('summary', '')
-                soup = BeautifulSoup(body_text, 'html.parser')
-                body_text_cleaned = soup.get_text()
+            published_date = (
+                datetime.fromtimestamp(time.mktime(entry.published_parsed))
+                if hasattr(entry, "published_parsed") else None
+            )
+            body_text_cleaned = BeautifulSoup(entry.get("summary", ""), "html.parser").get_text()
 
-                story = Story.objects.create(
+            new_stories.append(
+                Story(
                     title=entry.title,
                     body_text=body_text_cleaned,
                     article_url=entry.link,
@@ -99,7 +135,16 @@ def import_stories_from_feed(source, user):
                     source=source,
                     added_by=user
                 )
-                story.tagged_companies.set(source.tagged_companies.all())
+            )
+
+        if new_stories:
+            Story.objects.bulk_create(new_stories, ignore_conflicts=True)  # Bulk insert for performance
+
+            # Assign tagged companies efficiently in bulk
+            story_ids = [story.id for story in new_stories]
+            tagged_companies = list(source.tagged_companies.all())
+            for story in Story.objects.filter(id__in=story_ids):
+                story.tagged_companies.set(tagged_companies)
     except feedparser.CharacterEncodingOverride as e:
         print(f"Error parsing feed: {e}")
     except Exception as e:

@@ -6,7 +6,7 @@ from news_monitoring.users.models import User
 
 
 class Story(models.Model):
-    tagged_companies = models.ManyToManyField(Company, related_name="tagged_stories", null=True, blank=True)
+    tagged_companies = models.ManyToManyField(Company, related_name="tagged_stories")
 
     source = models.ForeignKey(Source, on_delete=models.CASCADE, related_name="stories", null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="stories")

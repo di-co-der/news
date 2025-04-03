@@ -32,7 +32,6 @@ project = "News Monitoring"
 copyright = """2025, Vaibhav Singh"""  # noqa: A001
 author = "Vaibhav Singh"
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

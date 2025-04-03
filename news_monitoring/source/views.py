@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 
 from news_monitoring.company.models import Company
-from news_monitoring.source.services import fetch_source_obj, validate_form_data, fetch_source_qs, \
-    import_stories_from_feed
+from news_monitoring.source.services import fetch_source_obj, validate_form_data, import_stories_from_feed, \
+    get_filtered_sources, get_sources_json
 
 
 @login_required
@@ -48,9 +49,20 @@ def add_or_edit_source(request, source_id=None):
     )
 
 
-@login_required
 def list_sources(request):
-    return render(request, "source/list_sources.html", {"sources": fetch_source_qs(request.user)})
+    """List sources with search and pagination."""
+    search_query = request.GET.get('q', '').strip()
+    page_number = request.GET.get('page')
+
+    sources_qs = get_filtered_sources(request.user, search_query)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return get_sources_json(sources_qs, page_number)
+
+    paginator = Paginator(sources_qs, 10)  # Show 10 sources per page
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "source/list_sources.html", {"sources": page_obj})
 
 
 @login_required

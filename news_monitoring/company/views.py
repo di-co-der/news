@@ -1,7 +1,9 @@
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, JsonResponse
+
 from .models import Company
+
 
 def add_company(request):
     if request.method == "POST":
@@ -30,15 +32,23 @@ def add_company(request):
         # Using the HTTP_REFERER header to get the previous page URL
         # referer = request.META.get('HTTP_REFERER', 'home')  # Default to 'signup' if referer is not found
         # print(referer)
-        messages.success(request,"Company Added Succesfully")
+        messages.success(request, "Company Added Succesfully")
         return redirect("company:add_company")
 
     return render(request, "company/add_company.html")
 
-def search_companies(request):
-    """API endpoint to search companies."""
-    query = request.GET.get("q", "").strip()
-    companies = Company.objects.filter(name__icontains=query)[:10]  # Limit results to 10
 
-    results = [{"id": company.id, "name": company.name} for company in companies]
-    return JsonResponse(results, safe=False)
+def search_companies(request):
+    query = request.GET.get("q", "").strip()
+    ids = request.GET.get("ids", "")
+
+    if ids:  # Preload selected companies by IDs
+        ids_list = [int(i) for i in ids.split(",") if i.isdigit()]
+        companies = Company.objects.filter(id__in=ids_list)
+    elif query:  # Search companies by name
+        companies = Company.objects.filter(name__icontains=query)
+    else:
+        companies = Company.objects.none()  # Return empty if no query
+
+    data = list(companies.values("id", "name"))
+    return JsonResponse(data, safe=False)

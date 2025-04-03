@@ -5,7 +5,7 @@
 {% block title %}View Sources{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/source/list_sources.css' %}"/>
+<link rel="stylesheet" href="{% static 'source/css/list_sources.css' %}"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
 {% endblock %}
 
@@ -55,33 +55,59 @@
 {% else %}
 <p>No sources available.</p>
 {% endif %}
+
+{% if sources.has_other_pages %}
+<div class="pagination">
+      <span class="step-links">
+        {% if sources.has_previous %}
+          <a href="?page=1">&laquo; First</a>
+          <a href="?page={{ stories.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+          Page {{ sources.number }} of {{ sources.paginator.num_pages }}.
+        </span>
+
+        {% if sources.has_next %}
+          <a href="?page={{ stories.next_page_number }}">Next</a>
+          <a href="?page={{ stories.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+      </span>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('#search-source').on('keyup', function() {
-      var value = $(this).val().toLowerCase();
-      $('.source-row').filter(function() {
-        $(this).toggle($(this).find('.source-name').text().toLowerCase().includes(value));
-      });
-    });
-
-    $('.fetch-story-btn').on('click', function() {
-      var sourceId = $(this).data('source-id');
-      $.ajax({
-        url: `/source/fetch-story/${sourceId}/`,
-        method: 'POST',
-        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-        success: function(response) {
-          $('#fetch-message').show().delay(2000).fadeOut();
-        },
-        error: function() {
-          alert('Failed to fetch story. Please try again.');
-        }
-      });
-    });
-  });
+  var sourceListUrl = "";
+  var csrfToken = "{{ csrf_token }}";
 </script>
+<script src="{% static 'source/js/list_source.js' %}"></script>
+<!--<script>-->
+<!--  $(document).ready(function() {-->
+<!--    $('#search-source').on('keyup', function() {-->
+<!--      var value = $(this).val().toLowerCase();-->
+<!--      $('.source-row').filter(function() {-->
+<!--        $(this).toggle($(this).find('.source-name').text().toLowerCase().includes(value));-->
+<!--      });-->
+<!--    });-->
+
+<!--    $('.fetch-story-btn').on('click', function() {-->
+<!--      var sourceId = $(this).data('source-id');-->
+<!--      $.ajax({-->
+<!--        url: `/source/fetch-story/${sourceId}/`,-->
+<!--        method: 'POST',-->
+<!--        headers: { 'X-CSRFToken': '{{ csrf_token }}' },-->
+<!--        success: function(response) {-->
+<!--          $('#fetch-message').show().delay(2000).fadeOut();-->
+<!--        },-->
+<!--        error: function() {-->
+<!--          alert('Failed to fetch story. Please try again.');-->
+<!--        }-->
+<!--      });-->
+<!--    });-->
+<!--  });-->
+<!--</script>-->
 {% endblock %}
