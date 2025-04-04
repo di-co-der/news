@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    // Function to fetch sources based on search input
     function fetchSources() {
         $.ajax({
             url: sourceListUrl,  // Ensure this variable is correctly set in your template
@@ -36,6 +37,28 @@ $(document).ready(function () {
                             </td>
                         </tr>`);
                 });
+
+                // Reattach fetchStories event after updating the table
+                $(".fetch-story-btn").off("click").on("click", fetchStories);
+            }
+        });
+    }
+
+    // Function to fetch stories when the "Fetch Story" button is clicked
+    function fetchStories() {
+        var sourceId = $(this).data("source-id");  // Get the source ID from button
+        var finalUrl = fetchStoriesUrl + sourceId + "/";  // Append source ID dynamically
+
+        $.ajax({
+            url: finalUrl,  // Use dynamically constructed URL
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken },  // Ensure CSRF token is included
+            success: function (response) {
+                $("#fetch-message").text(response.message).show().delay(3000).fadeOut();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", xhr.responseText);
+                alert("Failed to fetch story. Please try again.");
             }
         });
     }
@@ -45,4 +68,7 @@ $(document).ready(function () {
 
     // Fetch sources when search input changes
     $("#search-source").on("input", fetchSources);
+
+    // Attach event handler for fetch story button clicks
+    $(document).on("click", ".fetch-story-btn", fetchStories);
 });

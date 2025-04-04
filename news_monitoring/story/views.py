@@ -47,20 +47,25 @@ def add_or_edit(request, story_id=None):
 
 @login_required
 def list_stories(request):
-    """List stories based on user role and search/filter query."""
+    return shortcuts.render(request, 'story/list_stories.html')
+
+
+@login_required
+def fetch_stories(request):
     search_query = request.GET.get('q', '').strip()
     filter_date = request.GET.get('date', '').strip()
     page_number = request.GET.get('page')
 
     stories_qs = services.get_stories(request.user, search_query, filter_date)
+    print(stories_qs)
 
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return services.get_stories_json(stories_qs, page_number)
+    # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    #     print("Json Return")
+    #     return services.get_stories_json(stories_qs, page_number)
 
     paginator = Paginator(stories_qs, 10)
     page_obj = paginator.get_page(page_number)
-
-    return shortcuts.render(request, 'story/list_stories.html', {'stories': page_obj})
+    return services.get_stories_json(stories_qs, page_number)
 
 
 @login_required

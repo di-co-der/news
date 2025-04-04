@@ -54,7 +54,11 @@ def get_stories_json(stories_qs, page_number):
                 "tagged_companies": [company.name for company in story.tagged_companies.all()]
             }
             for story in page_obj
-        ]
+        ],
+        "has_next": page_obj.has_next(),
+        "has_previous": page_obj.has_previous(),
+        "current_page": page_obj.number,
+        "total_pages": paginator.num_pages,
     })
 
 

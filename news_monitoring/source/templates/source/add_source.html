@@ -50,25 +50,6 @@
 <script>
   var companySearch = "{% url 'company:search_companies' %}";
 </script>
-<script src="{% static 'js/select.js' %}"></script>
+<script src="{% static 'js/project.js' %}"></script>
 
-<script>
-  $(document).ready(function() {
-    $('.fetch-story-btn').on('click', function() {
-      var sourceId = $(this).data('source-id');
-
-      $.ajax({
-        url: `/fetch-story/${sourceId}/`,
-        method: 'POST',
-        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-        success: function(response) {
-          alert(response.message);
-        },
-        error: function() {
-          alert('Failed to fetch story. Please try again.');
-        }
-      });
-    });
-  });
-</script>
 {% endblock %}

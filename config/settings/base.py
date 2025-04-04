@@ -45,11 +45,11 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASE_URL = "postgres://postgres:postgres@127.0.0.1:5432/news_monitoring"  # In future remove this from here plave in .env file.
+# DATABASE_URL = "postgres://postgres:postgres@127.0.0.1:5432/news_monitoring"  # In future remove this from here plave in .env file.
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="postgres:///news_monitoring",
+        default="postgres://postgres:postgres@127.0.0.1:5432/news_monitoring"
     ),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True

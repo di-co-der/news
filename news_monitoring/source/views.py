@@ -1,7 +1,10 @@
+from allauth.core.internal.httpkit import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django import shortcuts
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from news_monitoring.company import models as company_model
 from news_monitoring.source import models as source_model
@@ -53,6 +56,7 @@ def list_sources(request):
     """List sources with search and pagination."""
     search_query = request.GET.get('q', '').strip()
     page_number = request.GET.get('page')
+    print(search_query, page_number)
 
     sources_qs = services.get_sources(request.user, search_query)
 
@@ -74,3 +78,16 @@ def delete_source(request, source_id):
         messages.success(request, "Source deleted successfully.")
         return shortcuts.redirect("source:list")
     return shortcuts.redirect("source:list")
+
+
+@csrf_exempt
+def fetch_stories(request, source_id):
+    if request.method == "POST":
+        print("++++++++++++++++++++++")
+        print("Inside fetch Story view")
+        print("+++++++++++++++++++++++")
+        services.import_stories_from_feed(source_id)
+        # return shortcuts.redirect("story:list")
+        return JsonResponse({"message": f"Stories fetched successfully for !"})
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)

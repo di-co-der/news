@@ -8,4 +8,5 @@ urlpatterns = [
     path("add/", views.add_or_edit, name="add"),
     path("edit/<int:story_id>/", views.add_or_edit, name="edit"),
     path("delete/<int:story_id>/", views.delete, name="delete"),
+    path("fetch-story/", views.fetch_stories, name="fetch")
 ]

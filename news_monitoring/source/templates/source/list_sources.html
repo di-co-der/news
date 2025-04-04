@@ -83,31 +83,7 @@
 <script>
   var sourceListUrl = "";
   var csrfToken = "{{ csrf_token }}";
+  var fetchStoriesUrl = "source/fetch-story/";
 </script>
 <script src="{% static 'source/js/list_source.js' %}"></script>
-<!--<script>-->
-<!--  $(document).ready(function() {-->
-<!--    $('#search-source').on('keyup', function() {-->
-<!--      var value = $(this).val().toLowerCase();-->
-<!--      $('.source-row').filter(function() {-->
-<!--        $(this).toggle($(this).find('.source-name').text().toLowerCase().includes(value));-->
-<!--      });-->
-<!--    });-->
-
-<!--    $('.fetch-story-btn').on('click', function() {-->
-<!--      var sourceId = $(this).data('source-id');-->
-<!--      $.ajax({-->
-<!--        url: `/source/fetch-story/${sourceId}/`,-->
-<!--        method: 'POST',-->
-<!--        headers: { 'X-CSRFToken': '{{ csrf_token }}' },-->
-<!--        success: function(response) {-->
-<!--          $('#fetch-message').show().delay(2000).fadeOut();-->
-<!--        },-->
-<!--        error: function() {-->
-<!--          alert('Failed to fetch story. Please try again.');-->
-<!--        }-->
-<!--      });-->
-<!--    });-->
-<!--  });-->
-<!--</script>-->
 {% endblock %}
