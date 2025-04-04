@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django import shortcuts
+from django.http import JsonResponse
 
 from news_monitoring.story.models import Story
 from news_monitoring.company.models import Company
@@ -57,16 +58,10 @@ def fetch_stories(request):
     page_number = request.GET.get('page')
 
     stories_qs = services.get_stories(request.user, search_query, filter_date)
-    print(stories_qs)
+    return JsonResponse(services.get_stories_json(stories_qs, page_number))
 
-    # if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-    #     print("Json Return")
-    #     return services.get_stories_json(stories_qs, page_number)
 
-    paginator = Paginator(stories_qs, 10)
-    page_obj = paginator.get_page(page_number)
-    return services.get_stories_json(stories_qs, page_number)
-
+# DRF
 
 @login_required
 def delete(request, story_id):

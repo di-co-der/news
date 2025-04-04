@@ -20,30 +20,9 @@
   <input type="date" id="filter-date" class="filter-input">
 </div>
 
-
 <div class="stories-container" id="stories-list"></div>
-<div class="pagination">Page</div>
-<!-- Pagination Controls -->
-<!--{% if stories.has_other_pages %}-->
-<!--<div class="pagination">-->
-<!--      <span class="step-links">-->
-<!--        {% if stories.has_previous %}-->
-<!--          <a href="?page=1">&laquo; First</a>-->
-<!--          <a href="?page={{ stories.previous_page_number }}">Previous</a>-->
-<!--        {% endif %}-->
+<div class="pagination"></div>
 
-<!--        <span class="current">-->
-<!--          Page {{ stories.number }} of {{ stories.paginator.num_pages }}.-->
-<!--        </span>-->
-
-<!--        {% if stories.has_next %}-->
-<!--          <a href="?page={{ stories.next_page_number }}">Next</a>-->
-<!--          <a href="?page={{ stories.paginator.num_pages }}">Last &raquo;</a>-->
-<!--        {% endif %}-->
-<!--      </span>-->
-<!--</div>-->
-
-<!--{% endif %}-->
 {% endblock %}
 
 {% block extra_js %}
@@ -52,6 +31,7 @@
 <script>
   var storyListUrl = "{% url 'story:fetch' %}";
 </script>
+<script src="{% static 'js/pagination.js' %}"></script>
 <script src="{% static 'story/js/list_stories.js' %}"></script>
 
 {% endblock %}

@@ -43,7 +43,7 @@ def get_stories_json(stories_qs, page_number):
     paginator = Paginator(stories_qs, 10)
     page_obj = paginator.get_page(page_number)
 
-    return JsonResponse({
+    return {
         "stories": [
             {
                 "id": story.id,
@@ -59,7 +59,7 @@ def get_stories_json(stories_qs, page_number):
         "has_previous": page_obj.has_previous(),
         "current_page": page_obj.number,
         "total_pages": paginator.num_pages,
-    })
+    }
 
 
 def update_or_create_story(story, user, title, body_text, published_date, article_url, tagged_companies):

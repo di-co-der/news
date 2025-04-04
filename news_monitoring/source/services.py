@@ -61,7 +61,13 @@ def get_sources_json(sources_qs, page_number):
         for source in page_obj
     ]
 
-    return JsonResponse({"sources": sources_data, "has_next": page_obj.has_next()})
+    return JsonResponse({
+        "sources": sources_data,
+        "has_next": page_obj.has_next(),
+        "has_previous": page_obj.has_previous(),
+        "current_page": page_obj.number,
+        "total_pages": paginator.num_pages,
+    })
 
 
 def update_or_create_source(source, user, name, url, company, tagged_companies):

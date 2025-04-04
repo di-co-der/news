@@ -1,23 +1,50 @@
 $(document).ready(function () {
-    // Function to fetch sources based on search input
-    function fetchSources() {
-        $.ajax({
-            url: sourceListUrl,  // Ensure this variable is correctly set in your template
-            data: {
-                q: $("#search-source").val().trim()
-            },
-            dataType: "json",
-            success: function (data) {
-                let sourceTableBody = $("#source-table tbody");
-                sourceTableBody.empty(); // Clear previous content
+    fetchSources(1);
 
-                if (!data.sources || data.sources.length === 0) {
+    // Re-fetch sources when search input changes
+    $("#search-source").on("input", function () {
+        fetchSources(1);
+    });
+
+    // Attach event handler for fetching stories
+    $(document).on("click", ".fetch-story-btn", fetchStories);
+    $(document).on("submit", ".delete-form", function (e) {
+        e.preventDefault();
+        let form = $(this);
+
+        if (confirm("Are you sure you want to delete this source?")) {
+            $.ajax({
+                url: form.attr("action"),
+                type: "POST",
+                data: form.serialize(),
+                success: function () {
+                    fetchSources();  // Refresh table after deletion
+                },
+                error: function (xhr) {
+                    console.error("Error deleting source:", xhr.responseText);
+                    alert("Failed to delete source.");
+                }
+            });
+        }
+    });
+});
+
+function fetchSources(page=1) {
+        $.ajax({
+            url: sourceListUrl,
+            data: {q: $("#search-source").val().trim()},
+            dataType: "json",
+            success: function (response) {
+                let sourceTableBody = $("#source-table tbody");
+                sourceTableBody.empty();
+
+                if (!response.sources || response.sources.length === 0) {
                     sourceTableBody.append("<tr><td colspan='4'>No results found.</td></tr>");
                     return;
                 }
 
-                data.sources.forEach(source => {
-                    let companies = Array.isArray(source.tagged_companies)
+                response.sources.forEach(source => {
+                    let companies = source.tagged_companies.length
                         ? source.tagged_companies.join(", ")
                         : "N/A";
 
@@ -30,45 +57,36 @@ $(document).ready(function () {
                                 <a href="/source/edit/${source.id}/" class="edit-btn">Edit</a>
                                 <form action="/source/delete/${source.id}/" method="post" class="delete-form">
                                     <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-                                    <button type="submit" class="delete-btn"
-                                            onclick="return confirm('Are you sure?');">Delete</button>
+                                    <button type="submit" class="delete-btn" onclick="return confirm('Are you sure?');">Delete</button>
                                 </form>
                                 <button class="fetch-story-btn" data-source-id="${source.id}">Fetch Story</button>
                             </td>
                         </tr>`);
+//                    sourceTableBody.append(rowHtml);
                 });
-
-                // Reattach fetchStories event after updating the table
-                $(".fetch-story-btn").off("click").on("click", fetchStories);
+                updatePagination(response);
+            },
+            error: function (xhr) {
+                console.error("Error fetching sources:", xhr.responseText);
+                alert("Failed to load sources. Please check your connection.");
             }
         });
     }
 
-    // Function to fetch stories when the "Fetch Story" button is clicked
-    function fetchStories() {
-        var sourceId = $(this).data("source-id");  // Get the source ID from button
-        var finalUrl = fetchStoriesUrl + sourceId + "/";  // Append source ID dynamically
+function fetchStories() {
+        let sourceId = $(this).data("source-id");
+        let finalUrl = fetchStoriesUrl + sourceId + "/";
 
         $.ajax({
-            url: finalUrl,  // Use dynamically constructed URL
+            url: finalUrl,
             method: "POST",
-            headers: { "X-CSRFToken": csrfToken },  // Ensure CSRF token is included
+            headers: { "X-CSRFToken": csrfToken },
             success: function (response) {
                 $("#fetch-message").text(response.message).show().delay(3000).fadeOut();
             },
-            error: function (xhr, status, error) {
-                console.error("Error:", xhr.responseText);
+            error: function (xhr) {
+                console.error("Error fetching story:", xhr.responseText);
                 alert("Failed to fetch story. Please try again.");
             }
         });
     }
-
-    // Fetch sources on page load
-    fetchSources();
-
-    // Fetch sources when search input changes
-    $("#search-source").on("input", fetchSources);
-
-    // Attach event handler for fetch story button clicks
-    $(document).on("click", ".fetch-story-btn", fetchStories);
-});

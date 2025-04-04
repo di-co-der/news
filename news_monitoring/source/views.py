@@ -53,20 +53,16 @@ def add_or_edit_source(request, source_id=None):
 
 @login_required
 def list_sources(request):
-    """List sources with search and pagination."""
+    return shortcuts.render(request, "source/list_sources.html")
+
+
+@login_required
+def fetch_sources(request):
     search_query = request.GET.get('q', '').strip()
     page_number = request.GET.get('page')
-    print(search_query, page_number)
-
     sources_qs = services.get_sources(request.user, search_query)
 
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return services.get_sources_json(sources_qs, page_number)
-
-    paginator = Paginator(sources_qs, 10)  # Show 10 sources per page
-    page_obj = paginator.get_page(page_number)
-
-    return shortcuts.render(request, "source/list_sources.html", {"sources": page_obj})
+    return services.get_sources_json(sources_qs, page_number)
 
 
 @login_required
