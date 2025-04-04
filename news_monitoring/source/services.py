@@ -1,8 +1,8 @@
+import feedparser
 import time
+from bs4 import BeautifulSoup
 from datetime import datetime
 
-import feedparser
-from bs4 import BeautifulSoup
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
@@ -12,26 +12,21 @@ from news_monitoring.source.models import Source
 from news_monitoring.story.models import Story
 
 
-def fetch_source_qs(user):
-    """Fetch sources based on user permissions with optimized queries."""
+def get_filtered_sources(user, search_query):
+    """Fetch sources filtered by user and search query."""
     try:
         queryset = Source.objects.select_related("company").prefetch_related("tagged_companies")
         if not user.is_staff:
             queryset = queryset.filter(company=user.company)
+
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+
         return queryset
+
     except Exception as e:
         print(f"Error fetching sources: {e}")
         return Source.objects.none()
-
-
-def get_filtered_sources(user, search_query):
-    """Fetch sources filtered by user and search query."""
-    sources_qs = fetch_source_qs(user)  # Fetch base queryset
-
-    if search_query:
-        sources_qs = sources_qs.filter(name__icontains=search_query)  # Apply search filter
-
-    return sources_qs
 
 
 def get_sources_json(sources_qs, page_number):
@@ -52,8 +47,8 @@ def get_sources_json(sources_qs, page_number):
     return JsonResponse({"sources": sources_data, "has_next": page_obj.has_next()})
 
 
-def fetch_source_obj(user, source_id):
-    """Fetch a single source with tagged companies using optimized queries."""
+def get_source(user, source_id):
+    """Fetch a single source with tagged companies."""
     try:
         queryset = Source.objects.select_related("company").prefetch_related("tagged_companies")
         if user.is_staff:
@@ -80,7 +75,7 @@ def update_or_create_source(user, name, url, company, tagged_companies, source=N
                 source = Source.objects.create(name=name, url=url, company=company, added_by=user)
 
             if tagged_companies:
-                source.tagged_companies.set(tagged_companies)  # Efficient M2M update
+                source.tagged_companies.set(tagged_companies)
 
         return True
     except IntegrityError as e:
@@ -100,10 +95,12 @@ def validate_form_data(user, payload, source_id):
         tagged_companies = payload.getlist("tagged_companies")
 
         if name and url:
-            source, _ = fetch_source_obj(user, source_id) if source_id else (None, [])
+            source, _ = get_source(user, source_id) if source_id else (None, [])
             success = update_or_create_source(user, name, url, company, tagged_companies, source)
             return success, "Success" if success else "Error updating source"
+
         return False, "Name and URL are required fields."
+
     except Exception as e:
         print(f"Error validating form data: {e}")
         return False, "Error occurred"
