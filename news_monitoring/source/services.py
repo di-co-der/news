@@ -12,7 +12,24 @@ from news_monitoring.source.models import Source
 from news_monitoring.story.models import Story
 
 
-def get_filtered_sources(user, search_query):
+def get_source(user, source_id):
+    """Fetch a single source with tagged companies."""
+    try:
+        queryset = Source.objects.prefetch_related("tagged_companies")
+
+        if user.is_staff:
+            source_obj = get_object_or_404(queryset, id=source_id)
+        else:
+            source_obj = get_object_or_404(queryset, id=source_id, company=user.company)
+
+        return source_obj, list(source_obj.tagged_companies.values_list("id", flat=True))
+
+    except Exception as e:
+        print(f"Error fetching source object: {e}")
+        return None, []
+
+
+def get_sources(user, search_query):
     """Fetch sources filtered by user and search query."""
     try:
         queryset = Source.objects.select_related("company").prefetch_related("tagged_companies")
@@ -47,24 +64,11 @@ def get_sources_json(sources_qs, page_number):
     return JsonResponse({"sources": sources_data, "has_next": page_obj.has_next()})
 
 
-def get_source(user, source_id):
-    """Fetch a single source with tagged companies."""
-    try:
-        queryset = Source.objects.select_related("company").prefetch_related("tagged_companies")
-        if user.is_staff:
-            source_obj = get_object_or_404(queryset, id=source_id)
-        else:
-            source_obj = get_object_or_404(queryset, id=source_id, company=user.company)
-        return source_obj, list(source_obj.tagged_companies.values_list("id", flat=True))
-    except Exception as e:
-        print(f"Error fetching source object: {e}")
-        return None, []
-
-
-def update_or_create_source(user, name, url, company, tagged_companies, source=None):
+def update_or_create_source(source, user, name, url, company, tagged_companies):
     """Create or update a source with optimized database transactions."""
     try:
         with transaction.atomic():
+
             if source:
                 source.name = name
                 source.url = url
@@ -96,7 +100,8 @@ def validate_form_data(user, payload, source_id):
 
         if name and url:
             source, _ = get_source(user, source_id) if source_id else (None, [])
-            success = update_or_create_source(user, name, url, company, tagged_companies, source)
+            success = update_or_create_source(source, user, name, url, company, tagged_companies)
+
             return success, "Success" if success else "Error updating source"
 
         return False, "Name and URL are required fields."

@@ -54,7 +54,7 @@ def list_sources(request):
     search_query = request.GET.get('q', '').strip()
     page_number = request.GET.get('page')
 
-    sources_qs = services.get_filtered_sources(request.user, search_query)
+    sources_qs = services.get_sources(request.user, search_query)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return services.get_sources_json(sources_qs, page_number)
