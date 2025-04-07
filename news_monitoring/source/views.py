@@ -1,28 +1,29 @@
-
-from django.contrib.auth.decorators import login_required
+from allauth.core.internal.httpkit import redirect
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django import shortcuts
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
-from news_monitoring.company.models import Company
-from news_monitoring.source.models import Source
-from news_monitoring.source.services import fetch_source_obj, validate_form_data, fetch_source_qs
+from news_monitoring.company import models as company_model
+from news_monitoring.source import models as source_model
+from news_monitoring.source import services
 
 
 @login_required
 def add_or_edit_source(request, source_id=None):
     user = request.user
-    companies = Company.objects.all()
 
+    companies = None
     source_obj = None
     tagged_companies = []
 
     if request.method == "POST":
-        is_validated, msg = validate_form_data(user, request.POST, source_id)
-        print(is_validated)
+        is_validated, msg = services.validate_form_data(user, request.POST, source_id)
 
         if not is_validated:
-            # messages.error(request, "Name and URL are required!")
-            render(
+            shortcuts.render(
                 request,
                 "source/add_source.html",
                 {
@@ -33,33 +34,56 @@ def add_or_edit_source(request, source_id=None):
                 }
             )
         else:
-            return redirect("source:list")
+            return shortcuts.redirect("source:list")
 
     if source_id:
-        source_obj, tagged_companies = fetch_source_obj(user, source_id)
+        source_obj, tagged_companies = services.get_source(user, source_id)
+        companies = company_model.Company.objects.all()
 
-    return render(
+    return shortcuts.render(
         request,
         "source/add_source.html",
         {
             "source": source_obj,
             "companies": companies,
-            "tagged_companies": tagged_companies,  # Pass selected companies for pre-filling
+            "tagged_companies": tagged_companies,
         },
     )
 
 
 @login_required
 def list_sources(request):
-    return render(request, "source/list_sources.html", {"sources": fetch_source_qs(request.user)})
+    return shortcuts.render(request, "source/list_sources.html")
+
+
+@login_required
+def fetch_sources(request):
+    search_query = request.GET.get('q', '').strip()
+    page_number = request.GET.get('page')
+    sources_qs = services.get_sources(request.user, search_query)
+
+    return services.get_sources_json(sources_qs, page_number)
 
 
 @login_required
 def delete_source(request, source_id):
-    source = get_object_or_404(Source, id=source_id, added_by=request.user)
+    source = shortcuts.get_object_or_404(source_model.Source, id=source_id, added_by=request.user)
 
     if request.method == "POST":
         source.delete()
         messages.success(request, "Source deleted successfully.")
-        return redirect("source:list")
-    return redirect("source:list")
+        return shortcuts.redirect("source:list")
+    return shortcuts.redirect("source:list")
+
+
+@csrf_exempt
+def fetch_stories(request, source_id):
+    if request.method == "POST":
+        print("++++++++++++++++++++++")
+        print("Inside fetch Story view")
+        print("+++++++++++++++++++++++")
+        services.import_stories_from_feed(source_id)
+        # return shortcuts.redirect("story:list")
+        return JsonResponse({"message": f"Stories fetched successfully for !"})
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('company', '0001_initial'),
         ('story', '0001_initial'),
@@ -12,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='story',
+            model_name='css',
             name='tagged_companies',
             field=models.ManyToManyField(blank=True, related_name='tagged_stories', to='company.company'),
         ),

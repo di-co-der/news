@@ -1,8 +1,9 @@
 from django.urls import path
 
-from .views import add_company
+from news_monitoring.company import views
 
 app_name = "company"
 urlpatterns = [
-    path("add/", add_company, name="add_company"),
+    path("add/", views.add_company, name="add_company"),
+    path("search/", views.search_companies, name="search_companies"),
 ]

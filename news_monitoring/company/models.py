@@ -6,21 +6,13 @@ from news_monitoring.users import models as user_model
 
 
 class Company(models.Model):
-    added_by = models.ForeignKey(
-        user_model.User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="added_companies",
-    )
-    updated_by = models.ForeignKey(
-        user_model.User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="updated_companies",
-    )
+    added_by = models.ForeignKey(user_model.User, on_delete=models.SET_NULL, null=True, related_name="added_companies")
+    updated_by = models.ForeignKey(user_model.User, on_delete=models.SET_NULL, null=True,
+                                   related_name="updated_companies")
 
     name = models.CharField(max_length=255, unique=True)
     domain = models.URLField(unique=True)
+    
     added_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
