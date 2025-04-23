@@ -1,0 +1,15 @@
+{% extends "api-base.html" %}
+{% load static %}
+<!-- Angular styles -->
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ MEDIA_URL }}source/dist/source/browser/styles.css" />
+{% endblock %}
+<!-- Angular app mount point -->
+{% block content %}
+  <app-root></app-root>
+{% endblock %}
+<!-- Angular scripts -->
+{% block extra_js %}
+  <script src="{{ MEDIA_URL }}source/dist/source/browser/polyfills.js"></script>
+  <script src="{{ MEDIA_URL }}source/dist/source/browser/main.js"></script>
+{% endblock %}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  {% if request.path|slice:":11" == "/api-source" %}
+    <base href="/api-source/source-angular/">
+  {% elif request.path|slice:":10" == "/api-story" %}
+    <base href="/api-story/story-angular/">
+  {% endif %}
+  <title> {% block title %}
+        News Monitoring
+      {% endblock title %}</title>
+{% load static %}
+    <link rel="stylesheet" href="{% static 'css/api-base.css' %}" />
+ {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar">
+  <div class="brand">
+    <a href="/api-source" class="brand-link">News Monitoring</a>
+  </div>
+  <ul class="nav-links">
+     <ul class="nav-links">
+        {% if user.is_authenticated %}
+          <li>
+            <a href="/api-source/source-angular/sources">View Sources</a>
+          </li>
+          <!-- Stories links -->
+          <li>
+            <a href="/api-story/story-angular/stories">View Stories</a>
+          </li>
+          <!-- Auth links -->
+          <li>
+            <a href="{% url 'users:logout' %}">Logout</a>
+          </li>
+          <li>
+              <span>Hello, {{ user.first_name }}!</span>
+          </li>
+        {% else %}
+          <li>
+            <a href="{% url 'users:login' %}">Login</a>
+          </li>
+          <li>
+            <a href="{% url 'users:signup' %}">Signup</a>
+          </li>
+        {% endif %}
+  </ul>
+</nav>
+
+ <div>
+      {% block content %}{% endblock %}
+    </div>
+
+    <!-- Block for additional JS -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

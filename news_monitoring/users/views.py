@@ -55,35 +55,33 @@ user_redirect_view = UserRedirectView.as_view()
 
 
 def signup(request):
-    companies = Company.objects.all()  # Fetch all companies
-
     if request.method == "POST":
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name", "")
         email = request.POST.get("email")
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
-        company_id = request.POST.get("company")
-
+        company_id = request.POST.get("company_id")
+        print(company_id)
         if password != confirm_password:
             return render(
                 request,
                 "users/signup.html",
-                {"error": "Passwords do not match!", "companies": companies},
+                {"error": "Passwords do not match!"}
             )
 
         if User.objects.filter(email=email).exists():
             return render(
                 request,
                 "users/signup.html",
-                {"error": "Email already in use!", "companies": companies},
+                {"error": "Email already in use!"},
             )
 
         # Assign company if selected
         company = None
         if company_id:
             company = Company.objects.get(id=company_id)
-
+        print(company, company_id)
         user = User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
@@ -96,20 +94,21 @@ def signup(request):
 
         return redirect("source:add")
 
-    return render(request, "users/signup.html", {"companies": companies})
+    return render(request, "users/signup.html")
 
 
 def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-
         user = authenticate(request, email=email, password=password)
+
         if user is not None:
             auth_login(request, user)
-            if (not user.added_sources.exists()):
+            if not user.added_sources.exists():
                 return redirect("source:add")
-            return redirect("story:list")
+            return redirect("source:list")
+
         messages.error(request, "Invalid email or password!")
 
     return render(request, "users/login.html")
