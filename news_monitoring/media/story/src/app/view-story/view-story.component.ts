@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { StoryService, Story } from '../story.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-view-story',
@@ -33,7 +34,8 @@ export class ViewStoryComponent implements OnInit, OnDestroy {
     private storyService: StoryService,
     private route: ActivatedRoute,
     public router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -228,7 +230,11 @@ submitForm(): void {
   if (this.isEditMode && this.editingStoryId) {
     this.storyService.updateStory(this.editingStoryId, formData).subscribe({
       next: (response) => {
-        console.log('Story updated successfully:', response);
+        // console.log('Story updated successfully:', response);
+         this.toastr.success(
+          `Story Updated successfully`,
+          'Success'
+        );
         this.closeModal();
         if (this.sourceId) {
           this.loadStoriesBySource();
@@ -262,6 +268,10 @@ submitForm(): void {
     this.storyService.createStory(formData).subscribe({
       next: (response) => {
         console.log('Story created successfully:', response);
+        this.toastr.success(
+          `Story created successfully`,
+          'Success'
+        );
         this.closeModal();
         if (this.sourceId) {
           this.loadStoriesBySource();
@@ -295,20 +305,19 @@ submitForm(): void {
         next: () => {
           if (this.sourceId) {
             this.loadStoriesBySource();
+            this.toastr.success('Story deleted successfully', 'Success');
           } else {
             this.loadStories();
           }
         },
         error: (error) => {
           console.error('Error deleting story:', error);
+            this.toastr.error('Could not delete Story', 'Error');
         }
       });
     }
   }
 
-  viewStoryDetails(storyId: number): void {
-    this.router.navigate(['/stories', storyId]);
-  }
 
   get Math() {
     return Math;

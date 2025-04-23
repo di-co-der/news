@@ -7,6 +7,7 @@ import { ViewStoryComponent } from './view-story/view-story.component';
 import {RouterOutlet} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+import {ToastrModule} from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,18 @@ import {HttpClientModule} from '@angular/common/http';
     RouterOutlet,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+     ToastrModule.forRoot({
+          timeOut: 3000,
+          positionClass: 'toast-top-right',
+          preventDuplicates: true,
+          toastClass: 'ngx-toastr',
+          titleClass: 'toast-title',
+          messageClass: 'toast-message',
+          tapToDismiss: true,
+          progressBar: true,
+          closeButton: true
+            }),
   ],
   providers: [],
   bootstrap: [AppComponent]
