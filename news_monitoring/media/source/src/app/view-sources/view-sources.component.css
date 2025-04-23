@@ -1,0 +1,178 @@
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  text-align: center;
+}
+
+input.form-control {
+  max-width: 400px;
+  margin: 0 auto 1.5rem auto;
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: box-shadow 0.3s ease;
+}
+
+input.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+  border-color: #3498db;
+}
+
+.table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+.btn {
+  margin-right: 5px;
+  padding: 5px 10px;
+  font-size: 0.875rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding-left: 0;
+}
+
+.page-item {
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.page-item.disabled .page-link {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.page-item.active .page-link {
+  background-color: #3498db;
+  color: white;
+  border: none;
+}
+
+.page-link {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  text-decoration: none;
+  color: #3498db;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.page-link:hover {
+  background-color: #e8f4fd;
+}
+
+/* Modal styles */
+.modal {
+  z-index: 1050;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+}
+
+.modal-backdrop {
+  z-index: 1040;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.5;
+}
+
+/* Make cursor a pointer for pagination links */
+.page-link {
+  cursor: pointer;
+}
+
+/* Fix for Bootstrap 5 margin classes */
+.me-1 {
+  margin-right: 0.25rem !important;
+}
+
+/* Add modal styles */
+.modal-container {
+  position: relative;
+}
+
+/* Ensure content is clickable above backdrop */
+.modal-content {
+  position: relative;
+  z-index: 1051;
+}
+
+/* Fix for modal open body style */
+:host ::ng-deep body.modal-open {
+  overflow: hidden;
+  padding-right: 15px; /* Prevents layout shift when scrollbar disappears */
+}
