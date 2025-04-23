@@ -41,10 +41,15 @@ getSources(page: number = 1, searchQuery: string = ''): Observable<SourceRespons
   return this.http.get<SourceResponse>(`${this.baseUrl}`, { params });
 }
 
+  // fetchStory(sourceId: number): Observable<any> {
+  //   const url = `${this.baseUrl}${sourceId}/fetch-stories/`;
+  //   return this.http.get<{detail: string}>(url);
+  // }
+
   fetchStory(sourceId: number): Observable<any> {
-    const url = `${this.baseUrl}${sourceId}/fetch-stories/`;
-    return this.http.get<{detail: string}>(url);
-  }
+  const url = `${this.baseUrl}${sourceId}/fetch-stories/`;
+  return this.http.get<{detail: string, stories: any[]}>(url);
+}
 
   getSourceFormData(sourceId?: number | null) {
     const csrfToken = this.cookieService.get('csrftoken');

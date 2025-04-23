@@ -13,6 +13,18 @@ import { ViewSourcesComponent } from './view-sources/view-sources.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {NgModule} from '@angular/core';
+import {MatFormField} from "@angular/material/form-field";
+import {MatChipGrid, MatChipInput, MatChipRow, MatChipsModule} from '@angular/material/chips';
+import {MatIcon, MatIconModule} from '@angular/material/icon';
+import {
+  MatAutocomplete,
+  MatAutocompleteModule,
+  MatAutocompleteTrigger,
+  MatOption
+} from '@angular/material/autocomplete';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({
@@ -31,6 +43,21 @@ import {NgModule} from '@angular/core';
     NgSelectModule,
     BrowserAnimationsModule,
     NgbModule,
+
+    MatAutocompleteModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormField,
+    MatChipGrid,
+    MatChipRow,
+    MatIcon,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatChipInput,
+    MatOption,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

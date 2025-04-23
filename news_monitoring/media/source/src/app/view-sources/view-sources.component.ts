@@ -28,6 +28,9 @@ export class ViewSourcesComponent implements OnInit, OnDestroy {
   totalPages: number = 1;
   searchQuery: string = '';
   showModal = false;
+  showStoriesModal = false;
+  importedStories: any[] = [];
+  currentSource: any = null;
   isEditMode = false;
   editingSourceId: number | null = null;
   sourceForm!: FormGroup;
@@ -227,10 +230,22 @@ fetchSourceFormData(sourceId: number): void {
   }
 
   fetchStory(sourceId: number): void {
-    this.sourceService.fetchStory(sourceId).subscribe({
-      next: (response: any) => alert(response.detail),
-      error: () => alert('Failed to fetch story.')
-    });
+    this.sourceService.fetchStory(sourceId).subscribe(
+      (response) => {
+        this.importedStories = response.stories || [];
+        this.currentSource = this.sources.find(s => s.id === sourceId);
+        this.showStoriesModal = true;
+      },
+      (error) => {
+        console.error('Error fetching stories:', error);
+        alert('Error fetching stories. Please try again.');
+      }
+    );
+  }
+
+  closeStoriesModal(): void {
+    this.showStoriesModal = false;
+    this.importedStories = [];
   }
 
   getPages(): number[] {
