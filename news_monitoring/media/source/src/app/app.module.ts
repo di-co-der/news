@@ -13,18 +13,15 @@ import { ViewSourcesComponent } from './view-sources/view-sources.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {NgModule} from '@angular/core';
-import {MatFormField} from "@angular/material/form-field";
-import {MatChipGrid, MatChipInput, MatChipRow, MatChipsModule} from '@angular/material/chips';
-import {MatIcon, MatIconModule} from '@angular/material/icon';
-import {
-  MatAutocomplete,
-  MatAutocompleteModule,
-  MatAutocompleteTrigger,
-  MatOption
-} from '@angular/material/autocomplete';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+
 import {MatButtonModule} from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+
 import {ToastrModule} from 'ngx-toastr';
 
 
@@ -61,14 +58,6 @@ import {ToastrModule} from 'ngx-toastr';
     MatIconModule,
     MatInputModule,
     MatButtonModule,
-    MatFormField,
-    MatChipGrid,
-    MatChipRow,
-    MatIcon,
-    MatAutocompleteTrigger,
-    MatAutocomplete,
-    MatChipInput,
-    MatOption,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

@@ -101,18 +101,32 @@
               <div class="invalid-feedback">Valid URL is required</div>
             </div>
 
-            <div class="mb-3">
+           <div class="mb-3">
               <label class="form-label">Tagged Companies</label>
-              <select
-                formControlName="tagged_companies"
-                class="form-select"
-                multiple
-              >
-                <option *ngFor="let company of companies" [value]="company.id">
-                  {{ company.name }}
-                </option>
-              </select>
-              <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple companies</small>
+              <mat-form-field class="example-chip-list w-100">
+                <mat-chip-grid #chipList aria-label="Company selection">
+                  <mat-chip
+                    *ngFor="let company of selectedCompanies"
+                    [removable]="true"
+                    (removed)="removeCompany(company)">
+                    {{company.name}}
+                    <mat-icon matChipRemove>X</mat-icon>
+                  </mat-chip>
+                  <input
+                    placeholder="Add company..."
+                    #companyInput
+                    [formControl]="companyCtrl"
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addCompany($event)">
+                </mat-chip-grid>
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedCompany($event)">
+                  <mat-option *ngFor="let company of filteredCompanies | async" [value]="company">
+                    {{company.name}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
             </div>
           </form>
         </div>

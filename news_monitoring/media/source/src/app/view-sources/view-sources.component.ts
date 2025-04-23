@@ -1,10 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SourceService } from '../source.service';
-import { ToastrService } from 'ngx-toastr'; // Import ToastrService
+import { ToastrService } from 'ngx-toastr';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { FormControl } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 interface Source {
   id: number;
@@ -20,6 +26,7 @@ interface Source {
   styleUrls: ['./view-sources.component.css']
 })
 export class ViewSourcesComponent implements OnInit, OnDestroy {
+  @ViewChild('companyInput') companyInput!: ElementRef<HTMLInputElement>;
   sources: Source[] = [];
   //pagination
   totalItems: number = 0;
@@ -36,6 +43,11 @@ export class ViewSourcesComponent implements OnInit, OnDestroy {
   sourceForm!: FormGroup;
   companies: any[] = [];
   private searchSubject = new Subject<string>();
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+companyCtrl = new FormControl();
+filteredCompanies!: Observable<any[]>;
+selectedCompanies: any[] = [];
 
   constructor(
     private sourceService: SourceService,
@@ -54,6 +66,13 @@ export class ViewSourcesComponent implements OnInit, OnDestroy {
       this.loadSources();
     });
     this.initializeForm();
+
+    this.filteredCompanies = this.companyCtrl.valueChanges.pipe(
+  startWith(null),
+  map((company: string | null) =>
+    company ? this._filterCompanies(company) : this.companies.slice()
+  )
+);
   }
 
   initializeForm(): void {
@@ -62,6 +81,8 @@ export class ViewSourcesComponent implements OnInit, OnDestroy {
       url: ['', [Validators.required, Validators.pattern(/https?:\/\/.*/)]],
       tagged_companies: [[]]
     });
+
+     this.selectedCompanies = [];
   }
 
   loadSources(): void {
@@ -98,6 +119,7 @@ export class ViewSourcesComponent implements OnInit, OnDestroy {
     this.fetchCompanies();
     this.showModal = true;
     this.addModalClass();
+     this.companyCtrl.setValue(null);
   }
 
   openEditModal(src: Source) {
@@ -171,6 +193,11 @@ fetchSourceFormData(sourceId: number): void {
                                sourceData.tagged_companies ||
                                [];
         console.log('Tagged companies:', taggedCompanies);
+
+        // Update selected companies
+        this.selectedCompanies = this.companies.filter(company =>
+          taggedCompanies.includes(company.id)
+        );
 
         this.sourceForm.patchValue({
           name: sourceData.name,
@@ -272,4 +299,68 @@ fetchSourceFormData(sourceId: number): void {
     this.removeModalClass();
     this.searchSubject.complete();
   }
+
+  private _filterCompanies(value: string | any): any[] {
+  let filterValue = '';
+  if (typeof value === 'string') {
+    filterValue = value.toLowerCase();
+  } else if (value && value.name) {
+    filterValue = value.name.toLowerCase();
+  }
+
+  return this.companies.filter(company =>
+    company.name.toLowerCase().includes(filterValue) &&
+    !this.selectedCompanies.some(c => c.id === company.id)
+  );
+}
+
+  addCompany(event: MatChipInputEvent): void {
+  const input = event.input;
+  const value = event.value;
+
+  // Add our company if it exists in our companies list
+  if ((value || '').trim()) {
+    const companyToAdd = this.companies.find(c =>
+      c.name.toLowerCase() === value.trim().toLowerCase()
+    );
+
+    if (companyToAdd && !this.selectedCompanies.some(c => c.id === companyToAdd.id)) {
+      this.selectedCompanies.push(companyToAdd);
+    }
+  }
+
+  // Reset the input value
+  if (input) {
+    input.value = '';
+  }
+
+  this.companyCtrl.setValue(null);
+  this.updateTaggedCompaniesFormValue();
+}
+
+removeCompany(company: any): void {
+  const index = this.selectedCompanies.indexOf(company);
+  if (index >= 0) {
+    this.selectedCompanies.splice(index, 1);
+  }
+  this.updateTaggedCompaniesFormValue();
+}
+
+selectedCompany(event: MatAutocompleteSelectedEvent): void {
+  const selectedCompany = event.option.value;
+  if (!this.selectedCompanies.some(c => c.id === selectedCompany.id)) {
+    this.selectedCompanies.push(selectedCompany);
+  }
+
+  this.companyInput.nativeElement.value = '';
+  this.companyCtrl.setValue(null);
+  this.updateTaggedCompaniesFormValue();
+}
+
+private updateTaggedCompaniesFormValue(): void {
+  this.sourceForm.patchValue({
+    tagged_companies: this.selectedCompanies.map(c => c.id)
+  });
+}
+
 }

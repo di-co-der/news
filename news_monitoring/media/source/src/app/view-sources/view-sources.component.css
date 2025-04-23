@@ -128,15 +128,21 @@ input.form-control:focus {
 
 /* Modal styles */
 .modal {
-  z-index: 1050;
+  z-index: 1060;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  /*overflow-x: hidden;*/
+  /*overflow-y: auto;*/
   outline: 0;
+}
+
+.modal-content,
+.modal-dialog,
+.modal {
+  overflow: visible !important;
 }
 
 .modal-backdrop {
@@ -176,72 +182,132 @@ body.modal-open {
   overflow: hidden;
   padding-right: 15px; /* Prevents layout shift when scrollbar disappears */
 }
-
-/* Material autocomplete and chip styles */
+/* Chips Autocomplete Container */
 .mat-form-field {
   width: 100%;
+  margin-bottom: 1.5rem;
 }
 
-mat-chip-row {
-  margin: 2px;
+/* Chip List Styles */
+.mat-chip-list-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  min-height: 48px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background: #fff;
 }
 
-/* Global style for CDK overlay container */
-.cdk-overlay-container {
-  z-index: 1065 !important; /* Higher than all other elements */
+.mat-chip-list-wrapper:focus-within {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
 }
 
-/* Style for mat-form-field within the modal */
-.modal-body .mat-form-field {
-  display: block;
-  width: 100%;
+/* Individual Chips */
+.mat-chip {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 0.875rem;
+  padding: 4px 12px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  height: auto;
+  margin: 0;
 }
 
-/* Ensure chip grid has proper background in modal */
-.mat-mdc-chip-grid {
-  background-color: white;
-  border-radius: 4px;
-  padding: 4px;
-  min-height: 40px;
+/* Remove button in chips */
+.mat-chip-remove {
+  opacity: 0.6;
+  color: #1976d2;
+  margin-left: 6px;
+  margin-right: -4px;
 }
 
-/* Style for chips */
-.mat-mdc-chip {
-  background-color: #e0e0e0;
-  margin: 4px 4px 4px 0;
-  padding: 4px 8px;
+.mat-chip-remove:hover {
+  opacity: 1;
 }
 
-/* Style for autocomplete panel specifically */
-.mat-autocomplete-panel {
-  z-index: 1060 !important;
-  background-color: white !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Better approach: add this to styles.css or a global CSS file */
-body .cdk-overlay-container {
-  z-index: 1065 !important;
-}
-
-/* Style for overlay backdrop */
-.cdk-overlay-backdrop {
-  z-index: 1064 !important;
-}
-
-/* Fix for Material form field appearance */
-.mat-mdc-form-field-infix {
-  padding: 0.75em 0 !important;
-}
-
-/* Style for input inside chip list */
-.mat-mdc-chip-grid input {
-  margin: 4px;
-  padding: 4px;
+/* Input Field */
+.mat-chip-input {
+  flex: 1;
+  min-width: 120px;
   border: none;
   outline: none;
+  background: transparent;
+  padding: 8px 0;
 }
 
-.mdc-line-ripple--active{
-  z-index: 1065 !important;
+/* Autocomplete Panel */
+.mat-autocomplete-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  margin-top: 8px !important;
+  z-index: 1052 !important; /* Higher than modal backdrop */
+  position: relative !important;
 }
+
+/* Autocomplete Options */
+.mat-option {
+  padding: 8px 16px !important;
+  min-height: 40px !important;
+}
+
+.mat-option:hover {
+  background: #f5f5f5 !important;
+}
+
+.mat-option.mat-active {
+  background: #e3f2fd !important;
+  color: #1976d2 !important;
+}
+
+/* Make sure the overlay container is above the modal backdrop */
+.cdk-overlay-container {
+  z-index: 1062 !important; /* higher than .modal (1060) */
+}
+
+.cdk-global-overlay-wrapper {
+  z-index: 1062 !important;
+}
+
+/* Make autocomplete panel above modal and backdrop */
+.modal-open .mat-autocomplete-panel {
+  z-index: 1063 !important;
+}
+
+
+/* Modal-specific adjustments */
+.modal-open .cdk-overlay-container {
+  z-index: 1061 !important; /* Above modal */
+}
+
+
+/* Label styling */
+.mat-form-field-label {
+  color: #495057 !important;
+  font-weight: 500 !important;
+}
+
+/* Focus state */
+.mat-focused .mat-form-field-label {
+  color: #3498db !important;
+}
+
+.mat-form-field-underline {
+  display: none !important;
+}
+
+.mat-form-field-ripple {
+  display: none !important;
+}
+.cdk-overlay-container {
+  z-index: 1000 !important; /* Or higher than your modal */
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 2000 !important;
+}
+
