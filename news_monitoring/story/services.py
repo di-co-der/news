@@ -1,7 +1,6 @@
 from django.core.paginator import Paginator
 from django.db import transaction, IntegrityError
 from django.db.models import Prefetch
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from news_monitoring.company.models import Company
@@ -20,7 +19,7 @@ def get_story(user, story_id):
     return story_obj, tagged_companies
 
 
-def get_stories(user, search_query, filter_date):
+def get_stories(user, search_query, filter_date, source_id=None):
     """Fetch and filter stories based on search query and date."""
     stories_qs = Story.objects.select_related("company").prefetch_related(
         Prefetch("tagged_companies", queryset=Company.objects.only("id", "name"))
@@ -34,6 +33,9 @@ def get_stories(user, search_query, filter_date):
 
     if filter_date:
         stories_qs = stories_qs.filter(published_date=filter_date)
+
+    if source_id:
+        stories_qs = stories_qs.filter(source_id=source_id)
 
     return stories_qs
 

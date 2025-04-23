@@ -22,6 +22,10 @@ urlpatterns = [
     path("story/", include("news_monitoring.story.urls")),
     path("source/", include("news_monitoring.source.urls")),
     path("company/", include("news_monitoring.company.urls")),
+
+    path("api-source/", include("news_monitoring.source.api_urls")),
+    path("api-story/", include("news_monitoring.story.api_urls")),
+    path("api-company/", include("news_monitoring.company.api_urls")),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

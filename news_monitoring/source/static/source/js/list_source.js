@@ -75,11 +75,11 @@ function fetchSources(page=1) {
 
 function fetchStories() {
         let sourceId = $(this).data("source-id");
-        let finalUrl = fetchStoriesUrl + sourceId + "/";
+       let finalUrl = `/source/fetch-story/${sourceId}/`;
 
         $.ajax({
             url: finalUrl,
-            method: "POST",
+            method: "GET",
             headers: { "X-CSRFToken": csrfToken },
             success: function (response) {
                 $("#fetch-message").text(response.message).show().delay(3000).fadeOut();

@@ -27,19 +27,19 @@
 //                    return;
 //                }
 //
-//                response.stories.forEach(story => {
+//                response.stories.forEach(fd => {
 //                    console.log("Loop",response)
 //                    storiesList.append(`
-//                        <div class="story-card">
-//                            <h3 class="story-title">
-//                                <a href="${story.article_url}" target="_blank">${story.title}</a>
+//                        <div class="fd-card">
+//                            <h3 class="fd-title">
+//                                <a href="${fd.article_url}" target="_blank">${fd.title}</a>
 //                            </h3>
-//                            <p class="story-date"><strong>Published Date:</strong> ${story.published_date}</p>
-//                            <p class="story-body">${story.body_text}</p>
-//                            <p class="story-companies"><strong>Tagged Companies:</strong> ${story.tagged_companies.join(", ")}</p>
-//                            <div class="story-actions">
-//                                <a href="/story/edit/${story.id}/" class="btn edit-btn">Edit</a>
-//                                <a href="/story/delete/${story.id}/" class="btn delete-btn" onclick="return confirm('Are you sure?');">Delete</a>
+//                            <p class="fd-date"><strong>Published Date:</strong> ${fd.published_date}</p>
+//                            <p class="fd-body">${fd.body_text}</p>
+//                            <p class="fd-companies"><strong>Tagged Companies:</strong> ${fd.tagged_companies.join(", ")}</p>
+//                            <div class="fd-actions">
+//                                <a href="/fd/edit/${fd.id}/" class="btn edit-btn">Edit</a>
+//                                <a href="/fd/delete/${fd.id}/" class="btn delete-btn" onclick="return confirm('Are you sure?');">Delete</a>
 //                            </div>
 //                        </div>`);
 //                });

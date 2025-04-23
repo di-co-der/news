@@ -28,7 +28,6 @@ def get_source(user, source_id):
         print(f"Error fetching source object: {e}")
         return None, []
 
-
 def get_sources(user, search_query):
     """Fetch sources filtered by user and search query."""
     try:
@@ -107,7 +106,6 @@ def validate_form_data(user, payload, source_id):
         if name and url:
             source, _ = get_source(user, source_id) if source_id else (None, [])
             success = update_or_create_source(source, user, name, url, company, tagged_companies)
-
             return success, "Success" if success else "Error updating source"
 
         return False, "Name and URL are required fields."
@@ -125,12 +123,12 @@ def import_stories_from_feed(source, user):
 
         for entry in feed.entries:
             if Story.objects.filter(article_url=entry.link).exists():
-                continue  # Skip if story already exists
+                continue  # Skip if fd already exists
 
-            published_date = (
-                datetime.fromtimestamp(time.mktime(entry.published_parsed))
-                if hasattr(entry, "published_parsed") else None
-            )
+            published_date = datetime.now()
+            if hasattr(entry, "published_parsed") and isinstance(entry.published_parsed, time.struct_time):
+                published_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+
             body_text_cleaned = BeautifulSoup(entry.get("summary", ""), "html.parser").get_text()
 
             new_stories.append(
@@ -146,13 +144,18 @@ def import_stories_from_feed(source, user):
             )
 
         if new_stories:
-            Story.objects.bulk_create(new_stories, ignore_conflicts=True)  # Bulk insert for performance
+            # Story.objects.bulk_create(new_stories, ignore_conflicts=True)  # Bulk insert for performance
+            created_stories = Story.objects.bulk_create(new_stories, ignore_conflicts=True)
+            created_stories = Story.objects.filter(article_url__in=[s.article_url for s in new_stories])
 
             # Assign tagged companies efficiently in bulk
-            story_ids = [story.id for story in new_stories]
+            # story_ids = [story.id for story in new_stories]
+
             tagged_companies = list(source.tagged_companies.all())
-            for story in Story.objects.filter(id__in=story_ids):
+            for story in created_stories:
                 story.tagged_companies.set(tagged_companies)
+            # for story in Story.objects.filter(id__in=story_ids):
+            #     story.tagged_companies.set(tagged_companies)
     except feedparser.CharacterEncodingOverride as e:
         print(f"Error parsing feed: {e}")
     except Exception as e:

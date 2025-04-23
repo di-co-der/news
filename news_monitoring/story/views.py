@@ -56,8 +56,9 @@ def fetch_stories(request):
     search_query = request.GET.get('q', '').strip()
     filter_date = request.GET.get('date', '').strip()
     page_number = request.GET.get('page')
+    source_id = request.GET.get('source_id')
 
-    stories_qs = services.get_stories(request.user, search_query, filter_date)
+    stories_qs = services.get_stories(request.user, search_query, filter_date, source_id)
     return JsonResponse(services.get_stories_json(stories_qs, page_number))
 
 
@@ -65,7 +66,7 @@ def fetch_stories(request):
 
 @login_required
 def delete(request, story_id):
-    story = services.get_object_or_404(Story, id=story_id, added_by=request.user)
+    story = services.get_object_or_404(Story, id=story_id)
     story.delete()
     messages.success(request, "Story deleted successfully.")
     return shortcuts.redirect("story:list")

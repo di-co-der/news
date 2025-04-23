@@ -8,7 +8,7 @@ from news_monitoring.users.models import User
 class Source(models.Model):
     tagged_companies = models.ManyToManyField(Company, related_name="tagged_sources", blank=True)
 
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sources",)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sources",null=True)
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="added_sources")
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="updated_sources",)
 

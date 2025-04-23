@@ -1,9 +1,6 @@
 function updatePagination(response) {
     let paginationContainer = $(".pagination");
-    console.log("Pagination Container Found:", paginationContainer.length);
     paginationContainer.empty(); // Clear existing pagination
-    console.log("Hi Sameer")
-    console.log(response)
 
     if (response.total_pages > 1) {
         let paginationHtml = '<div class="pagination-links">';
@@ -22,6 +19,5 @@ function updatePagination(response) {
 
         paginationHtml += '</div>';
         paginationContainer.append(paginationHtml);
-        console.log("Page - Updated")
     }
 }

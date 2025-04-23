@@ -1,4 +1,3 @@
-from allauth.core.internal.httpkit import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -67,7 +66,7 @@ def fetch_sources(request):
 
 @login_required
 def delete_source(request, source_id):
-    source = shortcuts.get_object_or_404(source_model.Source, id=source_id, added_by=request.user)
+    source = shortcuts.get_object_or_404(source_model.Source, id=source_id)
 
     if request.method == "POST":
         source.delete()
@@ -78,12 +77,9 @@ def delete_source(request, source_id):
 
 @csrf_exempt
 def fetch_stories(request, source_id):
-    if request.method == "POST":
-        print("++++++++++++++++++++++")
-        print("Inside fetch Story view")
-        print("+++++++++++++++++++++++")
-        services.import_stories_from_feed(source_id)
-        # return shortcuts.redirect("story:list")
-        return JsonResponse({"message": f"Stories fetched successfully for !"})
-
+    if request.method == "GET":
+        if source_id:
+            source_obj, tagged_companies = services.get_source(request.user, source_id)
+        services.import_stories_from_feed(source_obj, request.user)
+        return JsonResponse({"message": "Stories fetched successfully."})
     return JsonResponse({"error": "Invalid request method"}, status=400)

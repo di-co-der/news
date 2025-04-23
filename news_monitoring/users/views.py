@@ -61,8 +61,8 @@ def signup(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         confirm_password = request.POST.get("confirm_password")
-        company_id = request.POST.get("company")
-
+        company_id = request.POST.get("company_id")
+        print(company_id)
         if password != confirm_password:
             return render(
                 request,
@@ -81,7 +81,7 @@ def signup(request):
         company = None
         if company_id:
             company = Company.objects.get(id=company_id)
-
+        print(company, company_id)
         user = User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
