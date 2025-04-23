@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SourceService } from '../source.service';
-
+import { ToastrService } from 'ngx-toastr'; // Import ToastrService
 
 interface Source {
   id: number;
@@ -40,7 +40,8 @@ export class ViewSourcesComponent implements OnInit, OnDestroy {
   constructor(
     private sourceService: SourceService,
     public router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService // Add ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -189,12 +190,15 @@ fetchSourceFormData(sourceId: number): void {
 }
 
   deleteSource(id: number) {
-    if (!confirm('Are you sure you want to delete this source?')) return;
+     if (!confirm('Are you sure you want to delete this source?')) return;
     this.sourceService.deleteSource(id).subscribe({
-      next: () => this.loadSources(),
+      next: () => {
+        this.loadSources();
+        this.toastr.success('Source deleted successfully', 'Success'); // Show success toaster
+      },
       error: (err) => {
         console.error('Delete failed', err);
-        alert('Could not delete source');
+        this.toastr.error('Could not delete source', 'Error'); // Show error toaster
       }
     });
   }
@@ -216,15 +220,23 @@ fetchSourceFormData(sourceId: number): void {
       obs = this.sourceService.createSource(formData);
     }
 
-    obs.subscribe({
+     obs.subscribe({
       next: () => {
-        alert(`Source ${this.isEditMode ? 'updated' : 'created'} successfully`);
+        // Replace alert with toaster notification
+        this.toastr.success(
+          `Source ${this.isEditMode ? 'updated' : 'created'} successfully`,
+          'Success'
+        );
         this.closeModal();
         this.loadSources();
       },
       error: (err) => {
         console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} source:`, err);
-        alert(`Failed to ${this.isEditMode ? 'update' : 'create'} source`);
+        // Replace alert with toaster notification
+        this.toastr.error(
+          `Failed to ${this.isEditMode ? 'update' : 'create'} source`,
+          'Error'
+        );
       }
     });
   }
@@ -238,7 +250,7 @@ fetchSourceFormData(sourceId: number): void {
       },
       (error) => {
         console.error('Error fetching stories:', error);
-        alert('Error fetching stories. Please try again.');
+        this.toastr.error('Error fetching stories. Please try again.', 'Error');
       }
     );
   }

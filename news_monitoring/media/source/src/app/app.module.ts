@@ -25,6 +25,7 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
+import {ToastrModule} from 'ngx-toastr';
 
 
 @NgModule({
@@ -43,7 +44,17 @@ import {MatButtonModule} from '@angular/material/button';
     NgSelectModule,
     BrowserAnimationsModule,
     NgbModule,
-
+    ToastrModule.forRoot({
+          timeOut: 3000,
+          positionClass: 'toast-top-right',
+          preventDuplicates: true,
+          toastClass: 'ngx-toastr',
+          titleClass: 'toast-title',
+          messageClass: 'toast-message',
+          tapToDismiss: true,
+          progressBar: true,
+          closeButton: true
+            }),
     MatAutocompleteModule,
     MatChipsModule,
     MatFormFieldModule,
