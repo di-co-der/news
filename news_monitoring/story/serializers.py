@@ -4,7 +4,7 @@ from news_monitoring.company.models import Company
 
 
 class StorySerializer(serializers.ModelSerializer):
-    source_details = serializers.SerializerMethodField(read_only=True)
+    # source_details = serializers.SerializerMethodField(read_only=True)
     tagged_companies = serializers.PrimaryKeyRelatedField(
         queryset=Company.objects.all(),
         many=True,

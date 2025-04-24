@@ -23,12 +23,16 @@ import { MatInputModule } from '@angular/material/input';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 import {ToastrModule} from 'ngx-toastr';
+import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
+import { DeleteComponent } from './delete/delete.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ViewSourcesComponent,
+    AddOrUpdateComponent,
+    DeleteComponent,
   ],
   imports: [
     BrowserModule,
