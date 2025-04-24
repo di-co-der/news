@@ -9,7 +9,7 @@ from news_monitoring.company.models import Company
 from news_monitoring.source.models import Source
 from news_monitoring.source.serializers import SourceSerializer
 from news_monitoring.source import services
-
+from news_monitoring.story.models import Story
 
 class SourceViewSet(viewsets.ModelViewSet):
     """
@@ -48,14 +48,36 @@ class SourceViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return Response({"detail": "Source deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
+    # @action(detail=True, methods=['get'], url_path='fetch-stories')
+    # def fetch_stories(self, request, pk=None):
+    #     """
+    #     Custom action to import stories from a feed
+    #     """
+    #     source_obj, _ = services.get_source(request.user, pk)
+    #     services.import_stories_from_feed(source_obj, request.user)
+    #     return Response({"detail": "Stories imported successfully."})
+
     @action(detail=True, methods=['get'], url_path='fetch-stories')
     def fetch_stories(self, request, pk=None):
         """
-        Custom action to import stories from a feed
+        Custom action to import stories from a feed and return the imported stories
         """
         source_obj, _ = services.get_source(request.user, pk)
-        services.import_stories_from_feed(source_obj, request.user)
-        return Response({"detail": "Stories imported successfully."})
+        imported_stories = services.import_stories_from_feed(source_obj, request.user)
+
+        # Serialize the stories for the response
+        from rest_framework import serializers
+        class StorySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Story
+                fields = ['id', 'title', 'body_text', 'article_url', 'published_date']
+
+        serializer = StorySerializer(imported_stories, many=True)
+
+        return Response({
+            "detail": "Stories imported successfully.",
+            "stories": serializer.data
+        })
 
     @action(detail=False, methods=['get'], url_path='search')
     def fetch_sources(self, request):
@@ -99,5 +121,5 @@ class SourceViewSet(viewsets.ModelViewSet):
             "tagged_companies": tagged_companies_ids,
         })
 
-def angular_index(request, path=''):
+def index(request):
     return shortcuts.render(request, "source/index.html")

@@ -23,7 +23,7 @@ export interface SourceResponse {
 })
 
 export class SourceService {
-  private baseUrl = 'http://127.0.0.1:8000/api-source/sources/';
+  private baseUrl = 'http://127.0.0.1:8000/api-source/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 

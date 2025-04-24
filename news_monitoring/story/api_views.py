@@ -93,5 +93,5 @@ class StoryViewSet(viewsets.ModelViewSet):
             "tagged_companies": tagged_companies_ids,
         })
 
-def angular_index(request, path=''):
+def angular_index(request):
     return shortcuts.render(request, "story/index.html")

@@ -32,7 +32,7 @@ export interface StoryResponse {
   providedIn: 'root'
 })
 export class StoryService {
-  private baseUrl = 'http://127.0.0.1:8000/api-story/stories/';
+  private baseUrl = 'http://127.0.0.1:8000/api-story/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 

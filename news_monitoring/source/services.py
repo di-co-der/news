@@ -114,16 +114,62 @@ def validate_form_data(user, payload, source_id):
         print(f"Error validating form data: {e}")
         return False, "Error occurred"
 
-
+#
+# def import_stories_from_feed(source, user):
+#     """Fetch and save new stories from the source feed."""
+#     try:
+#         feed = feedparser.parse(source.url)
+#         new_stories = []
+#
+#         for entry in feed.entries:
+#             if Story.objects.filter(article_url=entry.link).exists():
+#                 continue  # Skip if fd already exists
+#
+#             published_date = datetime.now()
+#             if hasattr(entry, "published_parsed") and isinstance(entry.published_parsed, time.struct_time):
+#                 published_date = datetime.fromtimestamp(time.mktime(entry.published_parsed))
+#
+#             body_text_cleaned = BeautifulSoup(entry.get("summary", ""), "html.parser").get_text()
+#
+#             new_stories.append(
+#                 Story(
+#                     title=entry.title,
+#                     body_text=body_text_cleaned,
+#                     article_url=entry.link,
+#                     published_date=published_date,
+#                     company=user.company,
+#                     source=source,
+#                     added_by=user
+#                 )
+#             )
+#
+#         if new_stories:
+#             # Story.objects.bulk_create(new_stories, ignore_conflicts=True)  # Bulk insert for performance
+#             created_stories = Story.objects.bulk_create(new_stories, ignore_conflicts=True)
+#             created_stories = Story.objects.filter(article_url__in=[s.article_url for s in new_stories])
+#
+#             # Assign tagged companies efficiently in bulk
+#             # story_ids = [story.id for story in new_stories]
+#
+#             tagged_companies = list(source.tagged_companies.all())
+#             for story in created_stories:
+#                 story.tagged_companies.set(tagged_companies)
+#             # for story in Story.objects.filter(id__in=story_ids):
+#             #     story.tagged_companies.set(tagged_companies)
+#     except feedparser.CharacterEncodingOverride as e:
+#         print(f"Error parsing feed: {e}")
+#     except Exception as e:
+#         print(f"Unexpected error importing stories: {e}")
 def import_stories_from_feed(source, user):
     """Fetch and save new stories from the source feed."""
+    created_stories = []
     try:
         feed = feedparser.parse(source.url)
         new_stories = []
 
         for entry in feed.entries:
             if Story.objects.filter(article_url=entry.link).exists():
-                continue  # Skip if fd already exists
+                continue  # Skip if already exists
 
             published_date = datetime.now()
             if hasattr(entry, "published_parsed") and isinstance(entry.published_parsed, time.struct_time):
@@ -144,19 +190,17 @@ def import_stories_from_feed(source, user):
             )
 
         if new_stories:
-            # Story.objects.bulk_create(new_stories, ignore_conflicts=True)  # Bulk insert for performance
-            created_stories = Story.objects.bulk_create(new_stories, ignore_conflicts=True)
+            # Bulk insert for performance
+            Story.objects.bulk_create(new_stories, ignore_conflicts=True)
             created_stories = Story.objects.filter(article_url__in=[s.article_url for s in new_stories])
 
             # Assign tagged companies efficiently in bulk
-            # story_ids = [story.id for story in new_stories]
-
             tagged_companies = list(source.tagged_companies.all())
             for story in created_stories:
                 story.tagged_companies.set(tagged_companies)
-            # for story in Story.objects.filter(id__in=story_ids):
-            #     story.tagged_companies.set(tagged_companies)
     except feedparser.CharacterEncodingOverride as e:
         print(f"Error parsing feed: {e}")
     except Exception as e:
         print(f"Unexpected error importing stories: {e}")
+
+    return created_stories

@@ -107,7 +107,7 @@ def login(request):
             auth_login(request, user)
             if not user.added_sources.exists():
                 return redirect("source:add")
-            return redirect("source:list")
+            return redirect("source:index")
 
         messages.error(request, "Invalid email or password!")
 

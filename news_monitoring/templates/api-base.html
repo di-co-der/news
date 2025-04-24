@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   {% if request.path|slice:":11" == "/api-source" %}
-    <base href="/api-source/source-angular/">
+    <base href="/api-source/">
   {% elif request.path|slice:":10" == "/api-story" %}
-    <base href="/api-story/story-angular/">
+    <base href="/api-story/">
   {% endif %}
   <title> {% block title %}
         News Monitoring
@@ -17,19 +17,17 @@
 <body>
 <nav class="navbar">
   <div class="brand">
-    <a href="/api-source" class="brand-link">News Monitoring</a>
+    <a href="/api-source/sources" class="brand-link">News Monitoring</a>
   </div>
   <ul class="nav-links">
      <ul class="nav-links">
         {% if user.is_authenticated %}
           <li>
-            <a href="/api-source/source-angular/sources">View Sources</a>
+            <a href="/api-source/sources">View Sources</a>
           </li>
-          <!-- Stories links -->
           <li>
-            <a href="/api-story/story-angular/stories">View Stories</a>
+            <a href="/api-story/stories">View Stories</a>
           </li>
-          <!-- Auth links -->
           <li>
             <a href="{% url 'users:logout' %}">Logout</a>
           </li>
