@@ -8,6 +8,8 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Source, SourceResponse} from './interface';
 import {SourceService} from './http_service/source.service';
 import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
+import {DeleteComponent} from './delete/delete.component';
+import {FetchStoriesComponent} from './fetch-stories/fetch-stories.component';
 
 
 @Component({
@@ -90,37 +92,20 @@ export class AppComponent implements OnInit{
     }
 
   delete(source: Source){
-    if (confirm('Are you sure you want to delete this source?')) {
-      this.sourceService.delete(source.id).subscribe({
-        next: () => {
-          this.toastr.success('Source deleted successfully', 'Success');
-          this.fetchSources();
-        },
-        error: (error) => {
-          console.error('Error deleting source:', error);
-          this.toastr.error('Failed to delete source', 'Error');
-        }
-      });
-    }
+    const modalRef = this.modalService.open(DeleteComponent, { centered: true });
+    modalRef.componentInstance.source = source;
+    modalRef.componentInstance.refreshSources = new EventEmitter();
+    modalRef.componentInstance.refreshSources.subscribe(() => {
+      this.fetchSources();
+    });
   }
 
-  // Fetch stories from a source
   fetchStories(sourceId: number) {
-    this.sourceService.fetchStories(sourceId).subscribe({
-      next: (response) => {
-        if (response && response.stories && response.stories.length > 0) {
-          this.toastr.success(`${response.stories.length} stories fetched`, 'Success');
-          // Show stories in modal or navigate to stories view
-          // this.router.navigate(['/sources/stories', sourceId]);
-        } else {
-          this.toastr.info('No new stories were found', 'Information');
-        }
-      },
-      error: (error) => {
-        console.error('Error fetching stories:', error);
-        this.toastr.error('Failed to fetch stories', 'Error');
-      }
-    });
+    const source = this.sources.find(s => s.id === sourceId);
+    if (!source) return;
+
+    const modalRef = this.modalService.open(FetchStoriesComponent, { centered: true, size: 'lg' });
+    modalRef.componentInstance.source = source;
   }
   protected readonly Math = Math;
 }

@@ -39,16 +39,13 @@ export class AddOrUpdateComponent implements OnInit{
       this.sourceForm.patchValue({
         name: this.source.name,
         url: this.source.url
-        // Add more fields as needed
       });
     }
   }
 
   save(): void {
   if (this.sourceForm.invalid) return;
-
   const sourceData: Source = this.sourceForm.value;
-
   if (this.editMode && this.source) {
     this.update(this.source.id, sourceData);
   } else {

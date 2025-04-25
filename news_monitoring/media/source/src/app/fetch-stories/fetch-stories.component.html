@@ -1,1 +1,41 @@
-<p>fetch-stories works!</p>
+<div class="modal-header">
+  <h4 class="modal-title">Fetch Stories from {{ source?.name }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+  <div *ngIf="!fetchComplete && !loading">
+    <p>Do you want to fetch new stories from this source?</p>
+    <p>This will start the fetching process for source: <strong>{{ source?.name }}</strong></p>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Fetching stories, please wait...</p>
+  </div>
+
+  <div *ngIf="fetchComplete">
+    <div *ngIf="stories.length === 0" class="alert alert-info">
+      No new stories were found.
+    </div>
+
+    <div *ngIf="stories.length > 0">
+      <h6>{{ stories.length }} new stories imported:</h6>
+      <div class="list-group mt-3">
+        <div class="list-group-item list-group-item-action" *ngFor="let story of stories">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1"><a [href]="story.article_url" target="_blank">{{ story.title }}</a></h5>
+            <small>{{ story.published_date | date:'medium' }}</small>
+          </div>
+          <p class="mb-1">{{ story.body_text | slice:0:200 }}{{ story.body_text.length > 200 ? '...' : '' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button *ngIf="!fetchComplete && !loading" type="button" class="btn btn-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
+  <button *ngIf="!fetchComplete && !loading" type="button" class="btn btn-success" (click)="fetchStories()">Fetch Stories</button>
+  <button *ngIf="fetchComplete || loading" type="button" class="btn btn-primary" (click)="activeModal.close('Close')">Close</button>
+</div>

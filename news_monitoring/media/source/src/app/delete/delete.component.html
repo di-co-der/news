@@ -1,1 +1,12 @@
-<p>delete works!</p>
+<div class="modal-header">
+  <h4 class="modal-title">Confirm Delete</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+  <p>Are you sure you want to delete the source: <strong>{{ source?.name }}</strong>?</p>
+  <p class="text-danger">This action cannot be undone.</p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
+  <button type="button" class="btn btn-danger" (click)="delete()">Delete</button>
+</div>
