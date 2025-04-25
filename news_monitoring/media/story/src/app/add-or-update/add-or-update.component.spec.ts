@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewStoryComponent } from './view-story.component';
+import { AddOrUpdateComponent } from './add-or-update.component';
 
-describe('ViewStoryComponent', () => {
-  let component: ViewStoryComponent;
-  let fixture: ComponentFixture<ViewStoryComponent>;
+describe('AddOrUpdateComponent', () => {
+  let component: AddOrUpdateComponent;
+  let fixture: ComponentFixture<AddOrUpdateComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ViewStoryComponent]
+      declarations: [AddOrUpdateComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ViewStoryComponent);
+    fixture = TestBed.createComponent(AddOrUpdateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

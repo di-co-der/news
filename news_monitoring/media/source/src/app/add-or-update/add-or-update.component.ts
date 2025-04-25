@@ -4,8 +4,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 
-import { Source } from '../interface';
+import {Company, Source} from '../interface';
 import { SourceService } from '../http_service/source.service';
+import {CommonService} from '../http_service/common.service';
+import {map, Observable, of, switchMap} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
 
 
 @Component({
@@ -21,11 +24,15 @@ export class AddOrUpdateComponent implements OnInit{
   sourceForm: FormGroup;
   editMode = false;
 
+  selectedCompany?: Company;
+  companies: Company[] = [];
+
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private sourceService: SourceService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private commonService: CommonService
   ) {
     this.sourceForm = this.fb.group({
       name: ['', Validators.required],
@@ -41,6 +48,14 @@ export class AddOrUpdateComponent implements OnInit{
         url: this.source.url
       });
     }
+    this.commonService.getCompanies().subscribe({
+    next: (companies) => {
+      this.companies = companies;
+    },
+    error: (err) => {
+      console.error('Failed to load companies:', err);
+    }
+  });
   }
 
   save(): void {

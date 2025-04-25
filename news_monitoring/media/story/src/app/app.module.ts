@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { ViewStoryComponent } from './view-story/view-story.component';
 import {RouterOutlet} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+
 import {ToastrModule} from 'ngx-toastr';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
+import { DeleteComponent } from './delete/delete.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    ViewStoryComponent
+    AddOrUpdateComponent,
+    DeleteComponent
   ],
   imports: [
     BrowserModule,
@@ -21,6 +26,7 @@ import {ToastrModule} from 'ngx-toastr';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    NgbModule,
      ToastrModule.forRoot({
           timeOut: 3000,
           positionClass: 'toast-top-right',

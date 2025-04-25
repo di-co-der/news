@@ -5,7 +5,7 @@ import { debounceTime} from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {Source, SourceResponse} from './interface';
+import {Source} from './interface';
 import {SourceService} from './http_service/source.service';
 import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
 import {DeleteComponent} from './delete/delete.component';
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit{
   fetchSources(){
     this.sourceService.search(this.currentPage, this.searchQuery)
       .subscribe({
-        next: (response: SourceResponse) => {
+        next: (response) => {
           this.sources = response.results;
           this.totalItems = response.count;
           this.next = response.next;

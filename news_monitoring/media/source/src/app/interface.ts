@@ -16,10 +16,3 @@ export interface Source {
   updated_by: User;
   tagged_companies: Company[] | null;
 }
-
-export interface SourceResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Source[];
-}

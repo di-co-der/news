@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
-import {Observable} from 'rxjs';
+import {map, Observable} from 'rxjs';
 import {CookieService} from 'ngx-cookie-service';
 
 import {Company} from '../interface';
@@ -21,9 +21,11 @@ export class CommonService {
     const headers = new HttpHeaders({
       'X-CSRFToken': csrfToken
     });
-    return this.http.get<Company[]>(`${this.baseUrl}api-company/companies/`, {
-      headers,
-      withCredentials: true
-    });
+    return this.http.get<{ results: Company[] }>(`${this.baseUrl}api-company/companies/`, {
+        headers,
+        withCredentials: true
+      }).pipe(
+        map(response => response.results)
+      );
   }
 }
