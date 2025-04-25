@@ -1,13 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {AppComponent} from './app.component';
-// import {AddSourceComponent} from './add-source/add-source.component';
-import {ViewSourcesComponent} from './view-sources/view-sources.component';
+import {AddOrUpdateComponent} from './add-or-update/add-or-update.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/sources', pathMatch: 'full' },
-  { path: 'sources', component: ViewSourcesComponent },
+  { path: 'sources/add', component: AddOrUpdateComponent },
 ];
 
 @NgModule({

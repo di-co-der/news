@@ -27,8 +27,8 @@ class SourceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Source.objects.all()
-        return Source.objects.filter(company=user.company)
+            return Source.objects.all().prefetch_related('tagged_companies')
+        return Source.objects.filter(company=user.company).prefetch_related('tagged_companies')
 
     def perform_create(self, serializer):
         company = serializer.validated_data.get('company')

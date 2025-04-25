@@ -1,14 +1,11 @@
 from rest_framework import serializers
 from news_monitoring.source import models
+from news_monitoring.company import serializers as company_serializers
 
 
-#create serializers here
 class SourceSerializer(serializers.ModelSerializer):
-    companies = serializers.SerializerMethodField()
+    tagged_companies = company_serializers.CompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Source
-        fields = ['id', 'name', 'url', 'companies', 'added_by', 'updated_by']
-
-    def get_companies(self, obj):
-        return [company.name for company in obj.tagged_companies.all()]
+        fields = ['id', 'name', 'url', 'tagged_companies', 'added_by', 'updated_by']

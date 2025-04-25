@@ -9,7 +9,6 @@ import {NgSelectModule} from '@ng-select/ng-select';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ViewSourcesComponent } from './view-sources/view-sources.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {NgModule} from '@angular/core';
@@ -30,7 +29,6 @@ import { DeleteComponent } from './delete/delete.component';
 @NgModule({
   declarations: [
     AppComponent,
-    ViewSourcesComponent,
     AddOrUpdateComponent,
     DeleteComponent,
   ],
