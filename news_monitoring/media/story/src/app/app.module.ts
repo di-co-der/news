@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import {RouterOutlet} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, provideHttpClient, withInterceptors} from '@angular/common/http';
 
 import {ToastrModule} from 'ngx-toastr';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
 import { DeleteComponent } from './delete/delete.component';
+import {csrfInterceptor} from './csrf.interceptor';
 
 
 @NgModule({
@@ -39,7 +40,11 @@ import { DeleteComponent } from './delete/delete.component';
           closeButton: true
             }),
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(
+      withInterceptors([csrfInterceptor])
+    )
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
