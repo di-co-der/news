@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, provideHttpClient, withInterceptors} from '@angular/common/http';
 import {MatButtonModule} from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
@@ -12,7 +12,6 @@ import { MatInputModule } from '@angular/material/input';
 
 import {NgSelectModule} from '@ng-select/ng-select';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import {CookieService} from 'ngx-cookie-service';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import {ToastrModule} from 'ngx-toastr';
 
@@ -21,6 +20,7 @@ import { AppComponent } from './app.component';
 import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
 import { DeleteComponent } from './delete/delete.component';
 import { FetchStoriesComponent } from './fetch-stories/fetch-stories.component';
+import {csrfInterceptor} from './csrf.interceptor';
 
 
 @NgModule({
@@ -59,7 +59,11 @@ import { FetchStoriesComponent } from './fetch-stories/fetch-stories.component';
     MatInputModule,
     MatButtonModule,
   ],
-  providers: [CookieService],
+   providers: [
+    provideHttpClient(
+      withInterceptors([csrfInterceptor])
+    )
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

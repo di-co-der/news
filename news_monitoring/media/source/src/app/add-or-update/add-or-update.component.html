@@ -18,7 +18,39 @@
             Valid URL is required
           </div>
         </div>
-        <!-- Add more fields as needed for tagged companies, etc. -->
+          <!-- Tagged Companies Multi-select -->
+        <div class="mb-3">
+          <label for="companiesSearch" class="form-label">Tagged Companies</label>
+
+          <!-- Selected companies display -->
+          <div class="selected-companies mb-2">
+            <span *ngFor="let company of selectedCompanies" class="badge bg-primary me-1 mb-1">
+              {{ company.name }}
+              <button type="button" class="btn-close btn-close-white ms-1" aria-label="Remove"
+                      (click)="removeCompany(company)" style="font-size: 0.5rem;"></button>
+            </span>
+            <span *ngIf="selectedCompanies.length === 0" class="text-muted">
+              No companies selected
+            </span>
+          </div>
+             <!-- Search input -->
+          <div class="input-group">
+            <input type="text"
+                   id="companiesSearch"
+                   class="form-control"
+                   placeholder="Search companies"
+                   [formControl]="searchTerm"
+                   (input)="search(searchTerm.value)">
+          </div>
+          <!-- Dropdown for search results -->
+          <div class="company-dropdown" *ngIf="searchTerm.value">
+            <div class="dropdown-menu show" style="width: 100%; position: relative;">
+              <button type="button" class="dropdown-item" *ngFor="let company of filteredCompanies" (click)="selectCompany(company)">
+                {{ company.name }}
+              </button>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
     <div class="modal-footer">

@@ -3,7 +3,7 @@ export interface User {
   name: string;
 }
 
-export interface Company { //company
+export interface Company {
   id: number;
   name: string;
 }
