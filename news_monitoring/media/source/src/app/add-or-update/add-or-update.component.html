@@ -1,1 +1,27 @@
-<p>add-or-update works!</p>
+ <div class="modal-header">
+      <h4 class="modal-title">{{ editMode ? 'Edit Source' : 'Add New Source' }}</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="sourceForm">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" formControlName="name">
+          <div *ngIf="sourceForm.get('name')?.invalid && sourceForm.get('name')?.touched" class="text-danger">
+            Name is required
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="url" class="form-label">URL</label>
+          <input type="url" class="form-control" id="url" formControlName="url">
+          <div *ngIf="sourceForm.get('url')?.invalid && sourceForm.get('url')?.touched" class="text-danger">
+            Valid URL is required
+          </div>
+        </div>
+        <!-- Add more fields as needed for tagged companies, etc. -->
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
+      <button type="button" class="btn btn-primary" [disabled]="sourceForm.invalid" (click)="save()">Save</button>
+    </div>

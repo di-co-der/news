@@ -24,6 +24,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {ToastrModule} from 'ngx-toastr';
 import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
 import { DeleteComponent } from './delete/delete.component';
+import { FetchStoriesComponent } from './fetch-stories/fetch-stories.component';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { DeleteComponent } from './delete/delete.component';
     AppComponent,
     AddOrUpdateComponent,
     DeleteComponent,
+    FetchStoriesComponent,
   ],
   imports: [
     BrowserModule,

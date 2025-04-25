@@ -19,29 +19,32 @@ export class SourceService {
     if (query && query.trim() !== '') {
       params = params.set('search', query.trim());
     }
-
     return this.http.get(`${this.baseUrl}`, { params });
   }
 
 
-  save(source: Source, id?: number): Observable<any> { //different function
+  add(source: Source): Observable<any> {
     const csrfToken = this.cookieService.get('csrftoken');
     const headers = new HttpHeaders({
       'X-CSRFToken': csrfToken
     });
-    if (id) {
-      return this.http.put(`${this.baseUrl}${id}/`, source, {
-        headers,
-        withCredentials: true
-      });
-    }
-    else {
-      return this.http.post(this.baseUrl, source, {
-        headers,
-        withCredentials: true
-      });
-    }
+    return this.http.post(this.baseUrl, source, {
+      headers,
+      withCredentials: true
+    });
   }
+
+  edit(id: number, source: Source): Observable<any> {
+    const csrfToken = this.cookieService.get('csrftoken');
+    const headers = new HttpHeaders({
+      'X-CSRFToken': csrfToken
+    });
+    return this.http.put(`${this.baseUrl}${id}/`, source, {
+      headers,
+      withCredentials: true
+    });
+  }
+
 
   delete(id: number): Observable<any> {
     const csrfToken = this.cookieService.get('csrftoken');

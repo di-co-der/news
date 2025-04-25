@@ -1,16 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { FormControl } from '@angular/forms';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatChipInputEvent } from '@angular/material/chips';
+import {Component, EventEmitter, OnInit} from '@angular/core';
 
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, map, startWith } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime} from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {Source, SourceResponse} from './interface';
 import {SourceService} from './http_service/source.service';
-import {Router} from '@angular/router';
+import { AddOrUpdateComponent } from './add-or-update/add-or-update.component';
 
 
 @Component({
@@ -27,12 +24,14 @@ export class AppComponent implements OnInit{
   totalItems: number = 0;
   currentPage: number = 1;
   pageSize: number = 10;
+  next: string | null = null;
+  previous: string | null = null;
 
   searchQuery: string = '';
 
   constructor(
     private sourceService: SourceService,
-    private router: Router,
+    private modalService: NgbModal,
     private toastr: ToastrService
   ) {}
 
@@ -52,6 +51,8 @@ export class AppComponent implements OnInit{
         next: (response: SourceResponse) => {
           this.sources = response.results;
           this.totalItems = response.count;
+          this.next = response.next;
+          this.previous = response.previous;
         },
         error: (error) => {
           console.error('Error fetching sources:', error);
@@ -72,12 +73,21 @@ export class AppComponent implements OnInit{
   }
 
   add() {
-    this.router.navigate(['/sources/add-or-update']);
+    const modalRef = this.modalService.open(AddOrUpdateComponent, { centered: true });
+    modalRef.componentInstance.refreshSources = new EventEmitter<void>();
+    modalRef.componentInstance.refreshSources.subscribe(() => {
+      this.fetchSources();
+    });
   }
 
-  edit(source: Source) {
-    this.router.navigate(['/sources/add-or-update', source.id]);
-  }
+   edit(source: Source) {
+      const modalRef = this.modalService.open(AddOrUpdateComponent, { centered: true });
+      modalRef.componentInstance.source = source;
+      modalRef.componentInstance.refreshSources = new EventEmitter<void>();
+      modalRef.componentInstance.refreshSources.subscribe(() => {
+        this.fetchSources();
+      });
+    }
 
   delete(source: Source){
     if (confirm('Are you sure you want to delete this source?')) {
@@ -101,7 +111,7 @@ export class AppComponent implements OnInit{
         if (response && response.stories && response.stories.length > 0) {
           this.toastr.success(`${response.stories.length} stories fetched`, 'Success');
           // Show stories in modal or navigate to stories view
-          this.router.navigate(['/sources/stories', sourceId]);
+          // this.router.navigate(['/sources/stories', sourceId]);
         } else {
           this.toastr.info('No new stories were found', 'Information');
         }
@@ -112,19 +122,5 @@ export class AppComponent implements OnInit{
       }
     });
   }
-
-// getCompanyNames(tagged_companies: Companies[] | undefined): string {
-//   console.log("Function called");
-//
-//   if (!tagged_companies || tagged_companies.length === 0) {
-//     return 'N/A';
-//   }
-//
-//   const names = tagged_companies.map(company => company.name).join(', ');
-//   console.log("Companies:", names);
-//   return names;
-// }
-
-
   protected readonly Math = Math;
 }
