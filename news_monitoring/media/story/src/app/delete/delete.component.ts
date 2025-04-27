@@ -24,7 +24,6 @@ export class DeleteComponent {
     if (!this.story) return;
     this.storyService.delete(this.story.id).subscribe({
       next: () => {
-        console.log("inside delete")
         this.toastr.success('Source deleted successfully', 'Success');
         this.refreshStories.emit();
         this.activeModal.close('Delete');

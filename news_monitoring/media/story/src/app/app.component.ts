@@ -91,7 +91,6 @@ export class AppComponent implements OnInit {
   }
 
   delete(story: Story) {
-    console.log("before delete component")
     const modalRef = this.modalService.open(DeleteComponent, {centered: true});
     console.log("after delete component")
     modalRef.componentInstance.story = story;

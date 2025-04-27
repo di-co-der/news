@@ -17,39 +17,38 @@
     No stories found
   </div>
 
-  <!-- Stories table -->
-  <table *ngIf="stories.length > 0" class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Published Date</th>
-        <th>Tagged Companies</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let story of stories">
-        <a href="{{ story.url }}">
-          <td>{{ story.title }}</td>
-        </a>
-        <td>{{ story.published_date | date }}</td>
-        <td>
-          <ng-container *ngIf="story.tagged_companies && story.tagged_companies.length > 0; else noCompanies">
-            <ng-container *ngFor="let company of story.tagged_companies; let last = last">
-              {{ company.name }}{{ !last ? ', ' : '' }}
+  <!-- Card-based layout -->
+  <div *ngIf="stories.length > 0" class="row">
+    <div class="col-md-4 mb-4" *ngFor="let story of stories">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">
+            <a [href]="story.article_url" target="_blank">{{ story.title }}</a>
+          </h5>
+          <p class="card-subtitle mb-2 text-muted">
+            {{ story.published_date | date }}
+          </p>
+          <p class="card-text">
+            {{ story.body_text | slice:0:100 }}...
+            <a [href]="story.article_url" target="_blank">Read more</a>
+          </p>
+          <p class="mt-auto mb-1">
+            <strong>Tagged Companies:</strong>
+            <ng-container *ngIf="story.tagged_companies?.length; else noCompanies">
+              <span *ngFor="let company of story.tagged_companies; let last = last">
+                {{ company.name }}<span *ngIf="!last">, </span>
+              </span>
             </ng-container>
-          </ng-container>
-          <ng-template #noCompanies>
-            N/A
-          </ng-template>
-        </td>
-        <td>
-          <button (click)="edit(story)" class="btn btn-sm btn-primary me-1">Edit</button>
-          <button (click)="delete(story)" class="btn btn-sm btn-danger">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+            <ng-template #noCompanies>N/A</ng-template>
+          </p>
+          <div class="d-flex justify-content-end mt-2">
+            <button (click)="edit(story)" class="btn btn-sm btn-outline-primary me-2">Edit</button>
+            <button (click)="delete(story)" class="btn btn-sm btn-outline-danger">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Pagination -->
   <nav *ngIf="totalItems > pageSize" class="mt-3">

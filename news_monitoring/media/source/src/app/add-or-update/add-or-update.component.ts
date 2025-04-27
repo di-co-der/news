@@ -7,8 +7,6 @@ import { ToastrService } from 'ngx-toastr';
 import {Company, Source} from '../interface';
 import { SourceService } from '../http_service/source.service';
 import {CommonService} from '../http_service/common.service';
-import {map, Observable, of, Subject, switchMap} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
 
 
 @Component({
@@ -39,7 +37,6 @@ export class AddOrUpdateComponent implements OnInit{
     this.sourceForm = this.fb.group({
       name: ['', Validators.required],
       url: ['', [Validators.required, Validators.pattern('https?://.*')]],
-      taggedCompanies: [[]]
     });
   }
 
@@ -121,17 +118,20 @@ export class AddOrUpdateComponent implements OnInit{
   if (this.sourceForm.invalid) return;
   const sourceData: Source = {...this.sourceForm.value};
   sourceData.tagged_companies = this.selectedCompanies;
-  console.log(sourceData.tagged_companies)
-  console.log(sourceData.name)
+  const sourcePayload = {
+    name: sourceData.name,
+    url: sourceData.url,
+    tagged_companies: this.selectedCompanies.map(company => company.id)
+  };
   if (this.editMode && this.source) {
-    this.update(this.source.id, sourceData);
+    this.update(this.source.id, sourcePayload);
   } else {
-    this.add(sourceData);
+    this.add(sourcePayload);
   }
 }
 
-  private update(id: number, sourceData: Source): void {
-    this.sourceService.edit(id, sourceData).subscribe({
+  private update(id: number, sourcePayload: any): void {
+    this.sourceService.edit(id, sourcePayload).subscribe({
       next: () => {
         this.toastr.success('Source updated successfully', 'Success');
         this.refreshSources.emit();
@@ -144,8 +144,8 @@ export class AddOrUpdateComponent implements OnInit{
     });
   }
 
-  private add(sourceData: Source): void {
-    this.sourceService.add(sourceData).subscribe({
+  private add(sourcePayload: any): void {
+    this.sourceService.add(sourcePayload).subscribe({
       next: () => {
         this.toastr.success('Source added successfully', 'Success');
         this.refreshSources.emit();

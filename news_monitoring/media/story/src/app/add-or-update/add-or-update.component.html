@@ -1,1 +1,75 @@
-<p>add-or-update works!</p>
+<div class="modal-header">
+  <h4 class="modal-title">{{ editMode ? 'Edit Story' : 'Add New Story' }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="storyForm">
+    <div class="mb-3">
+      <label for="title" class="form-label">Title</label>
+      <input type="text" class="form-control" id="title" formControlName="title">
+      <div *ngIf="storyForm.get('title')?.invalid && storyForm.get('title')?.touched" class="text-danger">
+        Title is required
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="body_text" class="form-label">Body Text</label>
+      <textarea class="form-control" id="body_text" formControlName="body_text" rows="4"></textarea>
+      <div *ngIf="storyForm.get('body_text')?.invalid && storyForm.get('body_text')?.touched" class="text-danger">
+        Body text is required
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="published_date" class="form-label">Published Date</label>
+      <input type="date" class="form-control" id="published_date" formControlName="published_date">
+      <div *ngIf="storyForm.get('published_date')?.invalid && storyForm.get('published_date')?.touched" class="text-danger">
+        Published date is required
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="article_url" class="form-label">Article URL</label>
+      <input type="url" class="form-control" id="article_url" formControlName="article_url">
+      <div *ngIf="storyForm.get('article_url')?.invalid && storyForm.get('article_url')?.touched" class="text-danger">
+        Valid URL is required
+      </div>
+    </div>
+    <!-- Tagged Companies Multi-select -->
+    <div class="mb-3">
+      <label for="companiesSearch" class="form-label">Tagged Companies</label>
+
+      <!-- Selected companies display -->
+      <div class="selected-companies mb-2">
+        <span *ngFor="let company of selectedCompanies" class="badge bg-primary me-1 mb-1">
+          {{ company.name }}
+          <button type="button" class="btn-close btn-close-white ms-1" aria-label="Remove"
+                  (click)="removeCompany(company)" style="font-size: 0.5rem;"></button>
+        </span>
+        <span *ngIf="selectedCompanies.length === 0" class="text-muted">
+          No companies selected
+        </span>
+      </div>
+
+      <!-- Search input -->
+      <div class="input-group">
+        <input type="text"
+               id="companiesSearch"
+               class="form-control"
+               placeholder="Search companies"
+               [formControl]="searchTerm"
+               (input)="search(searchTerm.value)">
+      </div>
+
+      <!-- Dropdown for search results -->
+      <div class="company-dropdown" *ngIf="searchTerm.value">
+        <div class="dropdown-menu show" style="width: 100%; position: relative;">
+          <button type="button" class="dropdown-item" *ngFor="let company of filteredCompanies" (click)="selectCompany(company)">
+            {{ company.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.close('Cancel')">Cancel</button>
+  <button type="button" class="btn btn-primary" [disabled]="storyForm.invalid" (click)="save()">Save</button>
+</div>

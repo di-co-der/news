@@ -103,7 +103,6 @@ export class AppComponent implements OnInit{
   fetchStories(sourceId: number) {
     const source = this.sources.find(s => s.id === sourceId);
     if (!source) return;
-
     const modalRef = this.modalService.open(FetchStoriesComponent, { centered: true, size: 'lg' });
     modalRef.componentInstance.source = source;
   }

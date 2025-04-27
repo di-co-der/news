@@ -1,9 +1,9 @@
 export interface Story {
   id: number;
   title: string;
-  content: string;
+  body_text: string;
   published_date: string;
-  url: string;
+  article_url: string;
   tagged_companies: Company[] | null;
 }
 

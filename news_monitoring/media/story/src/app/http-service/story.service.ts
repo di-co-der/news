@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import {Story} from '../interface';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +16,6 @@ export class StoryService {
   search(page: number = 1, query: string = ''): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString()); //another method
-
     if (query && query.trim() !== '') {
       params = params.set('search', query.trim());
     }
