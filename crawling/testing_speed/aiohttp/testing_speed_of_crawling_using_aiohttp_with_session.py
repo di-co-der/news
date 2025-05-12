@@ -14,7 +14,7 @@ def clean_url(raw_url):
         url = "https://" + url
     return url
 
-df = pd.read_excel("company.xlsx")
+df = pd.read_excel("../company.xlsx")
 urls = df['url'].dropna().map(clean_url).dropna().tolist()
 
 results = []

@@ -1,0 +1,11 @@
+URL,TimeTaken,Status
+https://en.nantongfidelity.com,0.32139134407043457,"error: Error('Page.goto: net::ERR_CERT_COMMON_NAME_INVALID at https://en.nantongfidelity.com/\nCall log:\n  - navigating to ""https://en.nantongfidelity.com/"", waiting until ""load""\n')"
+https://isocabinets.com,30.008174419403076,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""https://isocabinets.com/"", waiting until ""load""\n')"
+http://www.pacpark.com/,30.00499439239502,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""http://www.pacpark.com/"", waiting until ""load""\n')"
+https://www.consensuscore.com/,30.005613803863525,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""https://www.consensuscore.com/"", waiting until ""load""\n')"
+https://www.manitou.com/en-IN,30.005068063735962,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""https://www.manitou.com/en-IN"", waiting until ""load""\n')"
+http://no-url-found.rai-products.com,20.033787488937378,"error: Error('Page.goto: net::ERR_NAME_NOT_RESOLVED at http://no-url-found.rai-products.com/\nCall log:\n  - navigating to ""http://no-url-found.rai-products.com/"", waiting until ""load""\n')"
+http://www.kiloutou.com,30.00419592857361,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""http://www.kiloutou.com/"", waiting until ""load""\n')"
+https://solidstatepower.net/,30.002913236618042,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""https://solidstatepower.net/"", waiting until ""load""\n')"
+http://austinspumpingservice.com,30.00386333465576,"error: TimeoutError('Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ""http://austinspumpingservice.com/"", waiting until ""load""\n')"
+https://www.berkeleyelectric.coop,23.671602487564087,success

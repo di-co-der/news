@@ -3,7 +3,7 @@ import asyncio
 import time
 from playwright.async_api import async_playwright
 
-df = pd.read_excel("company.xlsx")
+df = pd.read_excel("../company.xlsx")
 urls = df['url'].dropna().tolist()
 
 urls = urls[:10]

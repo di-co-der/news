@@ -4,7 +4,7 @@ import pandas as pd
 import time
 
 # Load URLs from Excel
-df = pd.read_excel("company.xlsx")
+df = pd.read_excel("../company.xlsx")
 urls = df['url'].dropna().tolist()
 # urls = urls[:3000]  # limit for testing
 
