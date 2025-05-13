@@ -25,7 +25,7 @@ async def fetch(session, url):
     start = time.time()
     try:
         async with session.get(url, timeout = aiohttp.ClientTimeout(total=35, connect=20, sock_connect=5, sock_read=10)) as response:
-            await response.text()  # actually read the response
+            await response.text()
             status = "success"
             if(response.status == 200):
                 count = count + 1
@@ -45,9 +45,7 @@ async def main():
     print(f"successful crawled {count}")
 
     # Optional: Save results
-    pd.DataFrame(results, columns=["URL", "TimeTaken", "Status"]).to_csv("aiohttp_results.csv", index=False)
+    # pd.DataFrame(results, columns=["URL", "TimeTaken", "Status"]).to_csv("aiohttp_results.csv", index=False)
 
 # Entry point
 asyncio.run(main())
-
-

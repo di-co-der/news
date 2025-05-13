@@ -61,7 +61,7 @@ def main():
         total_time = time.time() - start_all
         print(f"\nCrawled {len(urls)} URLs in {total_time:.2f} seconds")
         print(f"Successful crawled {count[0]}")
-        pd.DataFrame(list(results), columns=["URL", "TimeTaken", "Status"]).to_csv("aiohttp_multiprocess.csv", index=False)
+        # pd.DataFrame(list(results), columns=["URL", "TimeTaken", "Status"]).to_csv("aiohttp_multiprocess.csv", index=False)
 
 if __name__ == "__main__":
     main()

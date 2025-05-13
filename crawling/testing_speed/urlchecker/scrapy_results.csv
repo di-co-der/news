@@ -1,0 +1,11 @@
+URL,TimeTaken,Status
+https://www.manitou.com/en-IN,0.6073296070098877,success
+https://www.consensuscore.com/,0.7001297473907471,success
+http://no-url-found.rai-products.com,0.8758387565612793,error: DNSLookupError('no results for hostname lookup: no-url-found.rai-products.com')
+http://austinspumpingservice.com,0.927997350692749,success
+https://solidstatepower.net/,1.040893793106079,success
+https://www.berkeleyelectric.coop,1.394822359085083,success
+http://www.kiloutou.com,1.6886117458343506,success
+https://isocabinets.com,1.9230828285217285,success
+http://www.pacpark.com/,3.873314142227173,success
+https://en.nantongfidelity.com,6.167864084243774,error: ResponseNeverReceived([<twisted.python.failure.Failure twisted.internet.error.ConnectionLost: Connection to the other side was lost in a non-clean fashion: Connection lost.>])

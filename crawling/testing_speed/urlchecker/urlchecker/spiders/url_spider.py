@@ -1,6 +1,7 @@
 import scrapy
 import pandas as pd
 import time
+from collections import Counter
 
 class UrlSpider(scrapy.Spider):
     name = "url_spider"
@@ -17,9 +18,12 @@ class UrlSpider(scrapy.Spider):
             return url
 
         urls = df['url'].dropna().map(clean_url).dropna().tolist()
+        # urls = urls[:10]
+
         self.start_time = time.time()
         self.success_count = 0
         self.results = []
+        self.status_counter = Counter()
 
         for url in urls:
             yield scrapy.Request(
@@ -39,6 +43,7 @@ class UrlSpider(scrapy.Spider):
         else:
             status = f"HTTP {response.status}"
 
+        self.status_counter[str(response.status)] += 1
         self.results.append((url, duration, status))
         self.log(f"{url} -> {status} in {duration:.2f}s")
 
@@ -46,7 +51,16 @@ class UrlSpider(scrapy.Spider):
         request = failure.request
         url = request.meta['url']
         duration = time.time() - request.meta['start']
-        status = f"error: {repr(failure.value)}"
+
+        if failure.check(scrapy.spidermiddlewares.httperror.HttpError):
+            response = failure.value.response
+            status_code = response.status
+            status = f"HTTP {status_code}"
+            self.status_counter[str(status_code)] += 1
+        else:
+            status = f"error: {repr(failure.value)}"
+            self.status_counter["other_error"] += 1
+
         self.results.append((url, duration, status))
         self.log(f"{url} -> {status} in {duration:.2f}s")
 
@@ -54,6 +68,10 @@ class UrlSpider(scrapy.Spider):
         total_time = time.time() - self.start_time
         self.log(f"\nCrawled {len(self.results)} URLs in {total_time:.2f} seconds")
         self.log(f"Successfully crawled {self.success_count} URLs")
+
+        self.log("HTTP Status Summary:")
+        for code, count in self.status_counter.items():
+            self.log(f"  {code}: {count} URLs")
 
         # Save to CSV
         df = pd.DataFrame(self.results, columns=["URL", "TimeTaken", "Status"])

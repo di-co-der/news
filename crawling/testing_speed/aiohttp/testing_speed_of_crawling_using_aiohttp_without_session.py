@@ -31,7 +31,7 @@ async def main():
     print(f"\nCrawled {len(urls)} URLs in {total_time:.2f} seconds")
 
     # Optional: Save results
-    pd.DataFrame(results, columns=["URL", "TimeTaken", "Status"]).to_csv("aiohttp_results.csv", index=False)
+    # pd.DataFrame(results, columns=["URL", "TimeTaken", "Status"]).to_csv("aiohttp_results.csv", index=False)
 
 # Entry point
 asyncio.run(main())
